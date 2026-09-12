@@ -1,0 +1,57 @@
+# Dépendances, à tous les niveaux
+node_modules/
+
+# Builds et fichiers générés
+dist/
+build/
+out/
+web-build/
+*.tsbuildinfo
+
+# Expo et Metro
+.expo/
+expo-env.d.ts
+.metro-health-check*
+.kotlin/
+
+# Projets natifs générés par Expo
+/front-app/android/
+/front-app/ios/
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Certificats et clés
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.mobileprovision
+
+# Caches et couverture
+.npm/
+.eslintcache
+.turbo/
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+
+# Fichiers système
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# Fichiers temporaires des éditeurs
+.idea/
+*.swp
+*.swo
+*~
