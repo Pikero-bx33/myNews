@@ -456,7 +456,9 @@ Project progress should be recorded in:
 
 docs/PROJECT_LOG.md
 
-After completing a meaningful sprint or feature, update PROJECT_LOG.md with:
+At the end of each sprint or explicitly approved sprint block, Codex must
+update docs/PROJECT_LOG.md with a concise summary before the final commit.
+Do not update the log for each small intermediate step. Include:
 
 - sprint name
 - goal
