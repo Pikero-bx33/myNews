@@ -148,6 +148,9 @@ Figma is used before and during development to define:
 
 Authentication is handled with Better Auth.
 
+For the complete authentication workflow and implementation details, see
+[BETTER_AUTH.md](./BETTER_AUTH.md).
+
 The MVP should support:
 
 * email/password registration
