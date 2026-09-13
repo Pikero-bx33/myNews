@@ -10,10 +10,9 @@ Bienvenue
 Subtitle:
 Toute votre actualité, en un seul endroit.
 
-Primary authentication options:
+Primary authentication option:
 
-1. Continue with Google
-2. Email/password
+1. Email/password
 
 Fields:
 - Email
@@ -31,8 +30,6 @@ Actions:
 - Centered content
 - Full-width buttons
 - Large vertical spacing
-- Google login above email/password form
-- Divider with "OU"
 
 ## States
 

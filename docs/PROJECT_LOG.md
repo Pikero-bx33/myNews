@@ -1,5 +1,15 @@
 # Project Log
 
+## 2026-09-13 — Sprint 1: Better Auth email/password avec Expo
+
+**Goal:** Deliver and validate the email/password authentication foundation on a physical iPhone.
+
+**Changes:** Migrated the frontend from Expo SDK 54 to SDK 57; integrated Better Auth Expo with Secure Store; configured the API through `EXPO_PUBLIC_API_URL`; added protected `(auth)` and `(app)` route groups with minimal Login, Register, and authenticated screens.
+
+**Decisions:** Better Auth remains the sole source of truth for mobile authentication. Secure Store persists the session; Redux remains reserved for future business state. Google OAuth was studied and intentionally deferred to post-MVP: it requires a Development Build, Apple provisioning, and a public HTTPS backend for correct iPhone testing.
+
+**Verification:** Expo Doctor passed 21/21. On a physical iPhone 14 Pro, signup, signin, signout, protected routing, and session restoration after fully closing and reopening the app were validated against Express and MongoDB Atlas.
+
 ## 2026-09-12 — Sprint 0 frontend: cleanup and Expo SDK alignment
 
 **Goal:** Simplify the initial frontend setup and align its Expo dependencies with SDK 54, while preserving Expo Router and the current application behavior.

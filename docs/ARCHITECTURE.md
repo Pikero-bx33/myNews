@@ -152,7 +152,6 @@ The MVP should support:
 
 * email/password registration
 * email/password login
-* Google authentication
 * persistent authentication sessions
 * logout
 
@@ -1140,7 +1139,6 @@ Better Auth supports modern authentication flows while keeping authentication co
 The MVP should initially support:
 
 * email/password
-* Google authentication
 
 ---
 
@@ -1335,6 +1333,7 @@ Potential post-MVP evolutions include:
 * social features
 * comments
 * article ratings
+* Google authentication
 
 These features must not increase MVP complexity unless explicitly required.
 
