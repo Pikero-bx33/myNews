@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "node ./scripts/clean-dist.mjs",
-    "dev": "nodemon --exec node --loader ts-node/esm ./api/src/index.ts",
+    "dev": "tsx watch ./api/src/index.ts",
     "build": "yarn clean && tsc",
     "start": "yarn build && node dist/index.js"
   },
@@ -25,8 +25,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
-    "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3"
   }
 }
