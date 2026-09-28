@@ -293,8 +293,8 @@ Users must be able to update their preferences at any time.
 Possible API endpoints:
 
 ```text
-GET   /api/preferences
-PATCH /api/preferences
+GET   /api/v1/preferences
+PUT   /api/v1/preferences
 ```
 
 After a preference update, subsequent feed requests must use the new preferences.

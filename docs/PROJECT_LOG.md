@@ -1,5 +1,35 @@
 # Project Log
 
+## 2026-09-28 — Sprint 2C: persisted onboarding
+
+**Goal:** Connect preference onboarding to the protected preferences API and route authenticated users according to persisted preferences.
+
+**Changes:** Updated GET preferences to return an explicit nullable response; added the mobile preferences API helper with the Better Auth cookie; persisted the completed onboarding payload through PUT; and routed first-login users to onboarding while returning users go directly to Home.
+
+**Decisions:** The root layout remains responsible only for authentication. `(app)/index` owns the preference lookup and shows a loading or retry state while it resolves. Onboarding is marked complete only after the backend PUT succeeds.
+
+**Verification:** Backend and Expo checks, TypeScript, ESLint, and diff validation were run. Manual physical-device validation remains the next step.
+
+## 2026-09-28 — Sprint 2B: preferences onboarding UI
+
+**Goal:** Build the authenticated three-step preference onboarding flow without connecting it to the backend yet.
+
+**Changes:** Added Languages, Topics, and optional Keywords screens, with simple progress feedback, Back navigation, and minimum selection validation for languages and topics. A route-group-local React Context shares the temporary state during the flow.
+
+**Decisions:** Redux is not used because this state only exists during onboarding. Finish navigates to an authenticated placeholder; no preferences API call or onboarding-completion persistence is made until Sprint 2C.
+
+**Verification:** Expo checks, TypeScript, ESLint, and diff validation were run. No backend or authentication routing changes were made.
+
+## 2026-09-28 — Sprint 2A: user preferences backend
+
+**Goal:** Create the authenticated backend foundation for persisted user preferences, without onboarding UI.
+
+**Changes:** Added the `userPreferences` Mongoose collection and protected `GET`/`PUT /api/v1/preferences` routes. Preferences use the Better Auth UUID through `userId: string`; Zod validates and normalizes the preference arrays before an upsert.
+
+**Decisions:** GET returns a non-persisted default preference object when no document exists, keeping reads side-effect free and simplifying future onboarding. PUT replaces the complete preference resource and uses a simple upsert. The user ID always comes from the Better Auth session, never from the request body.
+
+**Verification:** TypeScript build and route-level checks were run. No frontend or onboarding UI was added.
+
 ## 2026-09-13 — Sprint 1: Better Auth email/password avec Expo
 
 **Goal:** Deliver and validate the email/password authentication foundation on a physical iPhone.

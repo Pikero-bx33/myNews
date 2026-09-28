@@ -1,49 +1,79 @@
-import { useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 
-import { authClient } from '@/lib/auth-client';
+import { getPreferences } from '@/lib/api/preferences';
 
-export default function AuthenticatedScreen() {
-  const { data: session } = authClient.useSession();
+export default function AppIndex() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const handleSignOut = async () => {
-    setErrorMessage(null);
-    setIsSigningOut(true);
+  useEffect(() => {
+    let isMounted = true;
 
-    const { error } = await authClient.signOut();
+    const loadPreferences = async () => {
+      setErrorMessage(null);
+      setIsLoading(true);
 
-    if (error) {
-      setErrorMessage(error.message ?? 'Impossible de se déconnecter.');
-    }
+      try {
+        const preferences = await getPreferences();
 
-    setIsSigningOut(false);
-  };
+        if (!isMounted) {
+          return;
+        }
+
+        router.replace(preferences ? '/home' : '/onboarding/languages');
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : 'Impossible de vérifier vos préférences. Réessayez.',
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadPreferences();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [retryCount]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator color="#2563EB" />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Utilisateur connecté</Text>
-      <Text>Email : {session?.user.email ?? 'Indisponible'}</Text>
-      <Text>Session : {session?.session.id ?? 'Indisponible'}</Text>
-      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-      <Button disabled={isSigningOut} onPress={handleSignOut} title="Sign out" />
+    <View style={styles.centeredContainer}>
+      <Text style={styles.error}>{errorMessage}</Text>
+      <Button onPress={() => setRetryCount((count) => count + 1)} title="Réessayer" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  centeredContainer: {
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
     flex: 1,
     gap: 16,
     justifyContent: 'center',
     padding: 24,
   },
   error: {
-    color: '#b00020',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '600',
+    color: '#EF4444',
+    lineHeight: 22,
+    textAlign: 'center',
   },
 });

@@ -16,20 +16,28 @@
 Purpose:
 Store the personalization settings for one user.
 
-Conceptual fields:
+Implemented fields:
 
-- userId
-- topics
-- keywords
-- contentLanguages
-- preferredSources
-- blockedSources
-- createdAt
-- updatedAt
+| Field | Type | Notes |
+| ---- | ---- | ---- |
+| `userId` | `string` | Unique Better Auth `authUsers.id` UUID. It is not a MongoDB ObjectId. |
+| `topics` | `string[]` | Empty by default. |
+| `keywords` | `string[]` | Empty by default. |
+| `contentLanguages` | `("fr" \| "en")[]` | Empty by default; only `fr` and `en` are accepted. |
+| `preferredSources` | `string[]` | Empty by default; reserved for a future provider integration. |
+| `blockedSources` | `string[]` | Empty by default; reserved for a future provider integration. |
+| `createdAt` | `Date` | Managed by Mongoose timestamps. |
+| `updatedAt` | `Date` | Managed by Mongoose timestamps. |
 
-A user can update these values at any time.
+The collection name is `userPreferences`. A user can update these values at any time.
 
 One user should have one preferences document.
+
+The API never accepts a client-provided `userId`: it obtains the ID from the validated Better Auth session.
+
+### Preferences API behaviour
+
+`GET /api/v1/preferences` returns `{ "preferences": null }` when the authenticated user has no persisted document. When a document exists, it returns `{ "preferences": { ... } }`. This allows the mobile app to distinguish first login from an onboarding already completed without creating data during a GET.
 
 ---
 
