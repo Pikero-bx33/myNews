@@ -1,5 +1,27 @@
 # Project Log
 
+## 2026-10-02 — Sprint 3B: first personalized backend feed
+
+**Goal:** Deliver the first protected real-time feed from persisted preferences through TheNewsAPI, while keeping the mobile app independent from provider data.
+
+**Changes:** Added runtime validation for `THE_NEWS_API_KEY`; a TheNewsAPI client that builds one URL-safe request; raw success and error Zod schemas; article normalization; and `GET /api/v1/feed`. The request maps languages, de-duplicated categories, simple keyword OR search, and optional included/excluded source domains. Documentation now records the live endpoint and its constraints.
+
+**Decisions:** A user without persisted preferences receives `409 Preferences required` and no provider call. The free-plan limit is the explicit `FEED_LIMIT = 3`. Provider failures return a generic 502, except rate limiting which returns 503; no token, signed URL, or provider message is sent to the client. TheNewsAPI's domain-valued `source` is used for both source fields, and `entertainment` maps back to both `cinema` and `culture`.
+
+**Verification:** `yarn tsc --noEmit`, `yarn build`, and scoped `git diff --check` passed. One real provider request returned HTTP 200, passed Zod validation, returned three articles, and successfully normalized its first article. `yarn dev` connected and served port 3001; the unauthenticated feed route returned 401. Authenticated and missing-preferences route cases require an available Better Auth session and were not fabricated.
+
+**Next steps:** Sprint 3C can connect the mobile feed UI, then consider cache/pagination/ranking only when product needs justify them.
+
+## 2026-09-29 — Sprint 3A: news provider decision and contract
+
+**Goal:** Select the MVP news provider and define a provider-independent normalized article contract before feed implementation.
+
+**Changes:** Selected TheNewsAPI for the MVP; documented its free-plan limit, language/category/search/domain strategy, topic mapping, GNews fallback, and the `NormalizedArticle` contract. Added backend-only provider constants, the normalized type, and `THE_NEWS_API_KEY` to the environment example.
+
+**Decisions:** TheNewsAPI is the sole MVP provider despite its current 3-article free-plan limit. `cinema` and `culture` both map to `entertainment`. The provider raw response, Zod parsing, network calls, feed route, cache, and frontend feed remain deferred to Sprint 3B.
+
+**Verification:** TypeScript validation and diff validation were run. No external news request or frontend change was made.
+
 ## 2026-09-28 — Sprint 2C: persisted onboarding
 
 **Goal:** Connect preference onboarding to the protected preferences API and route authenticated users according to persisted preferences.

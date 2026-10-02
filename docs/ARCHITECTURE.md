@@ -379,7 +379,7 @@ User preference documents should reference topic identifiers or slugs rather tha
 
 ## 8. News Provider Architecture
 
-The initial news provider has not yet been selected.
+TheNewsAPI is the selected provider for the MVP. The integration remains isolated so that GNews, the planned fallback, or another provider can be introduced later without changing the mobile article contract.
 
 Only one provider should be used for the MVP.
 
@@ -412,7 +412,7 @@ Conceptually:
                           │
                           ▼
                  ┌──────────────────┐
-                 │ Provider #1      │
+                 │ TheNewsAPI       │
                  │                  │
                  └──────────────────┘
 ```
@@ -483,7 +483,7 @@ This separation makes it easier to replace the provider later.
 
 ## 10. Personalized Feed
 
-The personalized feed is generated from the preferences stored for the authenticated user.
+The first real-time feed is exposed by the protected `GET /api/v1/feed` route. It obtains the user ID from the Better Auth session, never from a client parameter, and loads the corresponding `userPreferences` document.
 
 Conceptual flow:
 
@@ -491,7 +491,7 @@ Conceptual flow:
 User
  │
  ▼
-GET /api/feed
+GET /api/v1/feed
  │
  ▼
 Load UserPreferences
@@ -502,16 +502,13 @@ Load UserPreferences
  └── source preferences
  │
  ▼
-Feed Service
+Build one TheNewsAPI request
  │
  ▼
-News Provider
+Validate raw response with Zod
  │
  ▼
 Normalize articles
- │
- ▼
-Filter / rank
  │
  ▼
 Return personalized feed
@@ -520,7 +517,7 @@ Return personalized feed
 React Native App
 ```
 
-The first MVP feed-ranking logic should remain simple.
+The route makes one provider request per feed call, currently limited to three articles by the free plan. It performs no cache, persistence, pagination, multi-request batching, filtering, or ranking yet. If preferences are not persisted, it returns `409 Preferences required` without calling the provider.
 
 Potential ranking signals:
 
@@ -1240,7 +1237,7 @@ Using multiple news APIs immediately would add unnecessary complexity.
 
 The provider integration should remain isolated so another provider can be introduced later if justified.
 
-The initial provider has not yet been selected.
+TheNewsAPI is selected for the MVP. GNews remains the fallback candidate, but only one provider is implemented at a time.
 
 ---
 
