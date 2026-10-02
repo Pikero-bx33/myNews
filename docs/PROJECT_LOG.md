@@ -1,5 +1,17 @@
 # Project Log
 
+## 2026-10-02 — Sprint 3C: first personalized mobile feed
+
+**Goal:** Connect the React Native Home screen to the protected feed endpoint and display the first real personalized articles.
+
+**Changes:** Added the frontend `getFeed()` API helper and normalized article type; reused the Better Auth cookie-header helper already used by preferences; replaced the Home placeholder with a pull-to-refresh `FlatList`; and added reusable article cards with remote-image fallback, publication date, source, title, optional description/topics, and system-browser opening.
+
+**Decisions:** The frontend keeps its own provider-independent article contract instead of importing backend code. A `409 Preferences required` sends the user back to onboarding, while provider/network failures retain a Retry state. No frontend cache or pagination was added because the current free plan returns only three articles per request.
+
+**Verification:** TypeScript, ESLint, and scoped diff validation were run. Runtime device validation remains required with a valid Better Auth session and provider key.
+
+**Next steps:** Validate loading, refresh, error, empty, image fallback, and article opening on a device or simulator; then add article state features only when approved.
+
 ## 2026-10-02 — Sprint 3B: first personalized backend feed
 
 **Goal:** Deliver the first protected real-time feed from persisted preferences through TheNewsAPI, while keeping the mobile app independent from provider data.

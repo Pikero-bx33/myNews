@@ -22,7 +22,7 @@ type PreferencesResponse = {
   preferences: UserPreferences | null;
 };
 
-const getAuthHeaders = async () => {
+export const getAuthHeaders = async () => {
   const cookie = await authClient.getCookie();
 
   if (!cookie) {

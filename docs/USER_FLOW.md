@@ -90,3 +90,23 @@ Relevant code:
 ### 6. Returning user
 
 After an app restart or a new login, Better Auth restores the session through Secure Store. The preferences lookup finds the persisted document, so the user goes directly to Home instead of repeating onboarding.
+
+## Personalized news feed
+
+### 7. Load the personalized feed
+
+When the user reaches Home, the app sends `GET /api/v1/feed` with the Better Auth session cookie. The backend uses the saved preferences to retrieve and normalize relevant articles before returning them to the mobile app.
+
+- Articles available: Home displays one card per article with its image (or a fallback), source, date, title, optional description, and topics.
+- No articles: Home explains that no article matches the current preferences.
+- Preferences missing (`409`): the user is returned to the first onboarding step.
+- Network or provider error: Home displays an error message and a Retry action.
+
+The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser.
+
+Relevant code:
+
+- `front-app/app/(app)/home.tsx`
+- `front-app/components/feed/article-card.tsx`
+- `front-app/lib/api/feed.ts`
+- `back-api/api/src/routes/v1/feed.ts`
