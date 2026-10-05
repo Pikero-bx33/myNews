@@ -1,7 +1,9 @@
 import { getAuthHeaders } from '@/lib/api/preferences';
 import { apiBaseUrl } from '@/lib/auth-client';
+import type { ArticleUserState } from '@/lib/api/articles';
 
-export type NormalizedArticle = {
+export type FeedArticle = {
+  id: string;
   externalId: string;
   provider: 'thenewsapi';
   title: string;
@@ -13,10 +15,11 @@ export type NormalizedArticle = {
   publishedAt: string;
   language: string;
   topics: string[];
+  userState: ArticleUserState;
 };
 
 type FeedResponse = {
-  articles: NormalizedArticle[];
+  articles: FeedArticle[];
 };
 
 export class FeedRequestError extends Error {
@@ -34,13 +37,10 @@ const getErrorMessage = (status: number) => {
   return 'Impossible de charger vos actualités. Réessayez.';
 };
 
-export async function getFeed(): Promise<NormalizedArticle[]> {
-  console.log('getFeed start');
-  console.log('feed fetch start');
+export async function getFeed(): Promise<FeedArticle[]> {
   const response = await fetch(`${apiBaseUrl}/api/v1/feed`, {
     headers: await getAuthHeaders(),
   });
-  console.log('feed response', response.status);
 
   if (!response.ok) {
     throw new FeedRequestError(getErrorMessage(response.status), response.status);

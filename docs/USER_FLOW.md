@@ -14,8 +14,8 @@ Register
 │   ├── topics
 │   └── optional keywords
 │       → save preferences
-│       → Home
-└── preferences exist → Home
+│       → Home tab
+└── preferences exist → Home tab
 ```
 
 ### 1. Register
@@ -78,7 +78,7 @@ Relevant code:
 
 ### 5. Save preferences and reach Home
 
-When the user presses Finish, the app sends the selected languages, topics, and keywords to `PUT /api/v1/preferences`. The backend gets the user ID from the Better Auth session, upserts the `userPreferences` document, then the mobile app navigates to Home after a successful response.
+When the user presses Finish, the app sends the selected languages, topics, and keywords to `PUT /api/v1/preferences`. The backend gets the user ID from the Better Auth session, upserts the `userPreferences` document, then the mobile app navigates to the Home tab after a successful response.
 
 Relevant code:
 
@@ -102,7 +102,14 @@ When the user reaches Home, the app sends `GET /api/v1/feed` with the Better Aut
 - Preferences missing (`409`): the user is returned to the first onboarding step.
 - Network or provider error: Home displays an error message and a Retry action.
 
-The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser. Opening an article does **not** mark it as read: Favorite and Read / Unread will be separate explicit actions in a later sprint.
+The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser. Opening an article does **not** mark it as read.
+
+Each card provides two explicit, independent actions:
+
+- Favorite / Unfavorite persists the favorite state in MongoDB.
+- Read / Unread persists the reading state in MongoDB.
+
+After a successful action, the card updates immediately from the backend response without reloading the provider feed.
 
 Relevant code:
 
@@ -110,3 +117,13 @@ Relevant code:
 - `front-app/components/feed/article-card.tsx`
 - `front-app/lib/api/feed.ts`
 - `back-api/api/src/routes/v1/feed.ts`
+
+## Main navigation
+
+The authenticated app has three tabs:
+
+- **Accueil**: the personalized feed.
+- **Enregistrés**: persisted favorite articles, ordered by the most recently saved.
+- **Profil**: the signed-in email address and logout.
+
+Saved articles come from MongoDB through the backend and do not trigger a news-provider request. A user can remove a favorite or mark an article Read / Unread directly from this screen. Preference editing remains a future Profile step because the existing onboarding flow is not yet designed to edit and prefill saved preferences.

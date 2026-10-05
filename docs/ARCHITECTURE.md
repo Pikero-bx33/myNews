@@ -479,6 +479,10 @@ It should not know whether the external provider is GNews, NewsAPI, TheNewsAPI o
 
 This separation makes it easier to replace the provider later.
 
+The authenticated mobile navigation uses three Expo Router tabs: Home (personalized feed), Saved (persisted favorites), and Profile (account foundation). Home keeps its editorial feed data locally and only refreshes the provider on its existing initial load or explicit pull-to-refresh. Saved reads `GET /api/v1/favorites` on focus, so it uses persisted MongoDB data without triggering TheNewsAPI.
+
+Redux is used only for the shared in-memory `ArticleUserState` map (`articleId → favorite/read/timestamps`) consumed by Home and Saved. Feed articles, favorites lists, loading states, errors, preferences, and authentication remain outside Redux. API responses hydrate the map and successful toggles replace one entry; MongoDB remains the durable source of truth and no Redux persistence is used.
+
 ---
 
 ## 10. Personalized Feed

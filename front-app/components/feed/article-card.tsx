@@ -1,11 +1,14 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { GestureResponderEvent, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { NormalizedArticle } from '@/lib/api/feed';
+import type { FeedArticle } from '@/lib/api/feed';
 
 type ArticleCardProps = {
-  article: NormalizedArticle;
+  article: FeedArticle;
+  onToggleFavorite: (article: FeedArticle) => Promise<void>;
+  onToggleRead: (article: FeedArticle) => Promise<void>;
 };
 
 const formatPublishedAt = (publishedAt: string) => {
@@ -22,12 +25,28 @@ const formatPublishedAt = (publishedAt: string) => {
   }).format(date);
 };
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export function ArticleCard({ article, onToggleFavorite, onToggleRead }: ArticleCardProps) {
   const [hasImageError, setHasImageError] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'favorite' | 'read' | null>(null);
   const imageSource = article.imageUrl && !hasImageError ? { uri: article.imageUrl } : null;
 
   const openArticle = () => {
     void Linking.openURL(article.articleUrl);
+  };
+
+  const toggleAction = async (
+    event: GestureResponderEvent,
+    action: 'favorite' | 'read',
+    handler: (article: FeedArticle) => Promise<void>,
+  ) => {
+    event.stopPropagation();
+    setPendingAction(action);
+
+    try {
+      await handler(article);
+    } finally {
+      setPendingAction(null);
+    }
   };
 
   return (
@@ -56,7 +75,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </Text>
           <Text style={styles.date}>{formatPublishedAt(article.publishedAt)}</Text>
         </View>
-        <Text style={styles.title}>{article.title}</Text>
+        <Text style={[styles.title, article.userState.isRead && styles.readTitle]}>{article.title}</Text>
         {article.description ? (
           <Text numberOfLines={3} style={styles.description}>
             {article.description}
@@ -67,12 +86,46 @@ export function ArticleCard({ article }: ArticleCardProps) {
             {article.topics.join(' · ')}
           </Text>
         ) : null}
+        <View style={styles.actions}>
+          <Pressable
+            accessibilityLabel={article.userState.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            accessibilityRole="button"
+            disabled={pendingAction !== null}
+            onPress={(event) => void toggleAction(event, 'favorite', onToggleFavorite)}
+            style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            <Ionicons
+              color={article.userState.isFavorite ? '#2563EB' : '#6B7280'}
+              name={article.userState.isFavorite ? 'bookmark' : 'bookmark-outline'}
+              size={22}
+            />
+            <Text style={styles.actionLabel}>
+              {article.userState.isFavorite ? 'Enregistré' : 'Enregistrer'}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel={article.userState.isRead ? 'Marquer comme non lu' : 'Marquer comme lu'}
+            accessibilityRole="button"
+            disabled={pendingAction !== null}
+            onPress={(event) => void toggleAction(event, 'read', onToggleRead)}
+            style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            <Ionicons
+              color={article.userState.isRead ? '#10B981' : '#6B7280'}
+              name={article.userState.isRead ? 'checkmark-circle' : 'checkmark-circle-outline'}
+              size={22}
+            />
+            <Text style={styles.actionLabel}>{article.userState.isRead ? 'Lu' : 'Non lu'}</Text>
+          </Pressable>
+        </View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  actionButton: { alignItems: 'center', flexDirection: 'row', gap: 6, paddingVertical: 4 },
+  actionButtonPressed: { opacity: 0.65 },
+  actionLabel: { color: '#374151', fontSize: 13, fontWeight: '600' },
+  actions: { flexDirection: 'row', gap: 20, marginTop: 2 },
   card: {
     backgroundColor: '#FFFFFF',
     borderColor: '#E5E7EB',
@@ -98,6 +151,7 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'space-between',
   },
+  readTitle: { color: '#6B7280' },
   source: { color: '#2563EB', flex: 1, fontSize: 13, fontWeight: '700' },
   title: { color: '#111827', fontSize: 19, fontWeight: '700', lineHeight: 25 },
   topics: { color: '#6B7280', fontSize: 13, fontWeight: '600', textTransform: 'capitalize' },

@@ -1,5 +1,17 @@
 # Project Log
 
+## 2026-10-05 — Sprint 4C: mobile article-state integration
+
+**Goal:** Connect the persisted article states to the mobile app and provide the MVP authenticated navigation.
+
+**Changes:** Added Home, Saved, and Profile bottom tabs; frontend helpers for explicit article-state updates and persisted favorites; Favorite and Read / Unread controls on reusable article cards; local post-success card updates; a Saved screen with loading, error, empty, and list states; and a minimal Profile with email and logout.
+
+**Decisions:** Home and Saved retain their local article lists, loading states, and errors. Redux is used only for their shared in-memory `ArticleUserState` map, which is hydrated from API responses and updated after a successful toggle; it is never persisted. Home never reloads the provider feed for a state toggle; Saved reloads only its MongoDB-backed favorites endpoint on focus. Opening an article remains independent of Read. Preference editing is deferred because the onboarding screens do not yet preload existing preferences.
+
+**Verification:** TypeScript, ESLint, and scoped diff validation passed. Expo Doctor completed 20/21 checks and reported the pre-existing duplicate `expo-constants` versions (57.0.20 and transitive 57.0.19); no forced dependency change was made. End-to-end iPhone validation against an authenticated session and persisted articles remains required before committing.
+
+**Next steps:** Validate tabs, toggles, Saved updates, logout, and MongoDB state changes on iPhone; then decide whether preference editing belongs in Sprint 5.
+
 ## 2026-10-05 — Sprint 4B: user article state API
 
 **Goal:** Add protected backend APIs for explicit Favorite and Read / Unread state, favorites retrieval, and feed state enrichment.

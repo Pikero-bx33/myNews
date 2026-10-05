@@ -1,12 +1,14 @@
 import { Stack } from 'expo-router';
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 import { StatusBar } from 'expo-status-bar';
+import { Provider } from 'react-redux';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
+import { store } from '@/store/store';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -24,17 +26,19 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Protected guard={!session}>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          </Stack.Protected>
-          <Stack.Protected guard={Boolean(session)}>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack.Protected>
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <Provider store={store}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Protected guard={!session}>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack.Protected>
+            <Stack.Protected guard={Boolean(session)}>
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack.Protected>
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </Provider>
     </SafeAreaProvider>
   );
 }
