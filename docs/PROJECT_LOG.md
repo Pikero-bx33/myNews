@@ -1,5 +1,9 @@
 # Project Log
 
+## 2026-10-05 — Backend maintenance: Mongoose and development logs
+
+Migrated the two deprecated Mongoose `new: true` options to `returnDocument: "after"` without changing update behavior. Added a development-only HTTP logger that records method, path, status, and duration only.
+
 ## 2026-10-05 — Sprint 4C: mobile article-state integration
 
 **Goal:** Connect the persisted article states to the mobile app and provide the MVP authenticated navigation.

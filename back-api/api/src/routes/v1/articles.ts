@@ -97,7 +97,7 @@ articlesRouter.put("/articles/:articleId/state", async (req, res) => {
         $setOnInsert: { userId, articleId },
       },
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
         setDefaultsOnInsert: true,
         upsert: true,

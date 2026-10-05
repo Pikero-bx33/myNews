@@ -49,7 +49,7 @@ preferencesRouter.put("/preferences", async (req, res) => {
         $setOnInsert: { userId },
       },
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
         upsert: true,
       },
