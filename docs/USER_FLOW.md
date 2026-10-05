@@ -102,7 +102,7 @@ When the user reaches Home, the app sends `GET /api/v1/feed` with the Better Aut
 - Preferences missing (`409`): the user is returned to the first onboarding step.
 - Network or provider error: Home displays an error message and a Retry action.
 
-The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser.
+The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser. Opening an article does **not** mark it as read: Favorite and Read / Unread will be separate explicit actions in a later sprint.
 
 Relevant code:
 

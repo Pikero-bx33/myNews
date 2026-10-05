@@ -4,6 +4,8 @@ import { Router } from "express";
 import { auth } from "../../lib/auth.js";
 import { UserPreferencesModel } from "../../models/userPreferences.js";
 import { getTheNewsApiFeed, TheNewsApiError } from "../../providers/thenewsapi.js";
+import { persistFeedArticles } from "../../services/articlePersistence.js";
+import { addUserStatesToFeed } from "../../services/articleUserState.js";
 
 const feedRouter = Router();
 
@@ -25,7 +27,9 @@ feedRouter.get("/feed", async (req, res) => {
       return res.status(409).json({ error: "Preferences required" });
     }
 
-    const articles = await getTheNewsApiFeed(preferences);
+    const normalizedArticles = await getTheNewsApiFeed(preferences);
+    const persistedArticles = await persistFeedArticles(normalizedArticles);
+    const articles = await addUserStatesToFeed(session.user.id, persistedArticles);
     return res.json({ articles });
   } catch (error) {
     if (error instanceof TheNewsApiError) {

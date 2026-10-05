@@ -30,13 +30,13 @@ No request is made when an authenticated user has no persisted preferences: the 
 
 `api/src/schemas/thenewsapi.ts` validates the successful raw response with Zod before it is normalized. It validates only the response metadata and article fields used by myNews: `uuid`, `title`, `description`, `url`, `image_url`, `language`, `published_at`, `source`, and `categories`. The provider error payload `{ error: { code, message } }` has its own Zod schema.
 
-The normalizer returns `NormalizedArticle[]`. `source` is currently a domain from TheNewsAPI, not an editorial display name, so it is deliberately used for both `sourceName` and `sourceDomain`. Provider categories are converted back to myNews topic slugs; `entertainment` maps to both `cinema` and `culture` because the provider cannot distinguish them.
+The normalizer returns `NormalizedArticle[]`. Each article is then upserted in `articles` by the unique `provider + externalId` index, with `fetchedAt` refreshed on every feed request. The API returns a provider-independent `FeedArticle` with the persisted MongoDB `_id` serialized as `id`, alongside `externalId`, and the current user's persisted `userState`; the mobile app never receives an ObjectId structure. This state is retrieved in one MongoDB query for all feed articles and is not created by a feed GET. `source` is currently a domain from TheNewsAPI, not an editorial display name, so it is deliberately used for both `sourceName` and `sourceDomain`. Provider categories are converted back to myNews topic slugs; `entertainment` maps to both `cinema` and `culture` because the provider cannot distinguish them.
 
 ## Failure handling and scope
 
 Provider 400/401/402/403/5xx failures become a generic `502 News provider unavailable`; rate limiting (429) becomes `503 News provider unavailable`. Server logs contain only status and provider error code, never the token, signed URL, or provider message. Invalid successful payloads are also treated as a provider failure.
 
-Sprint 3B has no Mongo article collection, cache, pagination, multi-request batching, advanced ranking, article state, or frontend feed work. Every feed request is real-time and returns:
+Sprint 4A persists normalized metadata only; it has no cache, pagination, multi-request batching, advanced ranking, state-toggle routes, or frontend state actions. Every feed request remains real-time and returns:
 
 ```json
 { "articles": [] }

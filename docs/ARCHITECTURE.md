@@ -511,13 +511,19 @@ Validate raw response with Zod
 Normalize articles
  │
  ▼
+Persist or update article metadata
+ │
+ ▼
+Load current user article states in one MongoDB query
+ │
+ ▼
 Return personalized feed
  │
  ▼
 React Native App
 ```
 
-The route makes one provider request per feed call, currently limited to three articles by the free plan. It performs no cache, persistence, pagination, multi-request batching, filtering, or ranking yet. If preferences are not persisted, it returns `409 Preferences required` without calling the provider.
+The route makes one provider request per feed call, currently limited to three articles by the free plan. After normalization, it upserts each article into MongoDB by `provider + externalId`, updates `fetchedAt`, then returns the provider-independent feed contract with the persisted MongoDB ID as `id` and the current user's `userState`. The state lookup is one query for all feed article IDs; it never creates missing `UserArticleState` documents. It performs no cache, pagination, multi-request batching, filtering, or ranking yet. If preferences are not persisted, it returns `409 Preferences required` without calling the provider.
 
 Potential ranking signals:
 
@@ -650,16 +656,17 @@ UserArticleState
 MongoDB
 ```
 
-Possible API operations:
+Implemented API operations:
 
 ```text
-POST   /api/articles/:articleId/favorite
-DELETE /api/articles/:articleId/favorite
+GET /api/v1/articles/:articleId/state
+PUT /api/v1/articles/:articleId/state
+GET /api/v1/favorites
 ```
 
-The final endpoint structure will be decided when the feature is implemented.
+`PUT /api/v1/articles/:articleId/state` accepts either or both of `isFavorite` and `isRead`. This keeps the two explicit user actions independent while avoiding separate toggle routes. Setting `isFavorite` to `true` sets `savedAt` to the update time; setting it to `false` clears `savedAt`. The equivalent rule applies to `isRead` and `readAt`.
 
-Removing an article from favorites should update or remove the corresponding user/article state.
+`GET /api/v1/favorites` returns the current user's persisted favorite articles with their user state, sorted by `savedAt` descending. When both flags are `false`, the state document is retained rather than deleted.
 
 ---
 
@@ -667,12 +674,13 @@ Removing an article from favorites should update or remove the corresponding use
 
 Users should be able to mark articles as read.
 
-The application may set an article as read when:
-
-* the user opens the article detail
-* the user explicitly marks it as read
+The application sets an article as read only when the user explicitly chooses the action. Opening an article or its publisher URL must not update `isRead` or `readAt`.
 
 Read state belongs to the user/article relationship.
+
+Favorite and read state are independent: an article may be favorite but unread, or read without being a favorite.
+
+The feed returns this state alongside each article, so the mobile app does not need one request per article card. The state is persisted only after an explicit `PUT` action.
 
 Example:
 

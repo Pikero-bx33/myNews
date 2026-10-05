@@ -71,40 +71,43 @@ Example:
 ## Article
 
 Purpose:
-Store normalized article metadata when persistence or caching is required.
+Store the normalized metadata needed to display a provider article and associate it with user state. The collection name is `articles`.
 
-Fields:
+| Field | Type | Notes |
+| ---- | ---- | ---- |
+| `provider` | `"thenewsapi"` | The provider that supplied the article. |
+| `externalId` | `string` | The provider article UUID. |
+| `title` | `string` | Article headline. |
+| `description` | `string \| null` | Optional provider description. |
+| `articleUrl` | `string` | Original publisher URL. |
+| `imageUrl` | `string \| null` | Optional image URL. |
+| `sourceName` | `string` | Current provider source value. |
+| `sourceDomain` | `string` | Current provider source domain. |
+| `publishedAt` | `Date` | Provider publication date. |
+| `language` | `string` | Article language. |
+| `topics` | `string[]` | Normalized myNews topic slugs. |
+| `fetchedAt` | `Date` | Last time myNews retrieved this article. |
+| `createdAt` / `updatedAt` | `Date` | Managed by Mongoose timestamps. |
 
-- provider
-- externalId
-- canonicalUrl
-- title
-- description
-- imageUrl
-- sourceName
-- sourceDomain
-- publishedAt
-- language
-- topics
-- fetchedAt
-
-Do not store full article content unless licensing explicitly allows it.
+The compound index `provider + externalId` is unique, so repeated feed requests update the same article rather than inserting duplicates. Full article content is never stored.
 
 ---
 
 ## UserArticleState
 
 Purpose:
-Store a user's relationship with an article.
+Store a user's independent favorite and reading status for one persisted article. The collection name is `userArticleStates`.
 
-Fields:
+| Field | Type | Notes |
+| ---- | ---- | ---- |
+| `userId` | `string` | Better Auth `authUsers.id` UUID. |
+| `articleId` | `ObjectId` | Reference to `articles._id`. |
+| `isFavorite` | `boolean` | Defaults to `false`. |
+| `isRead` | `boolean` | Defaults to `false`. |
+| `savedAt` | `Date \| null` | Defaults to `null`; set only by a future explicit favorite action. |
+| `readAt` | `Date \| null` | Defaults to `null`; set only by a future explicit read action. |
+| `createdAt` / `updatedAt` | `Date` | Managed by Mongoose timestamps. |
 
-- userId
-- articleId
-- isFavorite
-- isRead
-- isHidden
-- savedAt
-- readAt
+The compound index `userId + articleId` is unique. `isFavorite` and `isRead` have no dependency: either can be true while the other is false. Opening an article does **not** automatically mark it as read.
 
-A user/article pair should be unique.
+`GET` requests never create a state document. `PUT /api/v1/articles/:articleId/state` creates it only when the user explicitly changes Favorite or Read. A document is retained even when both flags are `false`, so its lifecycle stays explicit and does not depend on automatic deletion.

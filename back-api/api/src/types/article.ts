@@ -11,3 +11,18 @@ export type NormalizedArticle = {
   title: string;
   topics: string[];
 };
+
+export type FeedArticle = NormalizedArticle & {
+  id: string;
+};
+
+export type ArticleUserState = {
+  isFavorite: boolean;
+  isRead: boolean;
+  savedAt: string | null;
+  readAt: string | null;
+};
+
+export type FeedArticleWithUserState = FeedArticle & {
+  userState: ArticleUserState;
+};

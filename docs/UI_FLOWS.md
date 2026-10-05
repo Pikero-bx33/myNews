@@ -27,3 +27,25 @@ Home
 ```
 
 The Home list supports pull-to-refresh. Each refresh makes one new feed request; this stays deliberately simple while TheNewsAPI's free plan returns at most three articles per request.
+
+Opening an article only opens the publisher URL. It does **not** mark the article as read; Favorite and Read / Unread will be separate explicit actions.
+
+## Article state API
+
+```text
+Authenticated user
+→ GET /api/v1/articles/:articleId/state
+├── persisted state → return Favorite and Read values with timestamps
+└── no persisted state → return false / false without creating a document
+
+Authenticated user
+→ PUT /api/v1/articles/:articleId/state
+→ explicit Favorite and/or Read update
+→ persist UserArticleState
+
+Authenticated user
+→ GET /api/v1/favorites
+→ favorite articles, ordered by savedAt descending
+```
+
+Favorite and Read are independent. The feed receives each article's `userState` in its existing response, avoiding one state request per article.

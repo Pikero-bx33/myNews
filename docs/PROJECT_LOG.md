@@ -1,5 +1,29 @@
 # Project Log
 
+## 2026-10-05 — Sprint 4B: user article state API
+
+**Goal:** Add protected backend APIs for explicit Favorite and Read / Unread state, favorites retrieval, and feed state enrichment.
+
+**Changes:** Added protected article-state GET/PUT routes with strict Zod validation and ObjectId validation; added the favorites endpoint ordered by `savedAt` descending; and enriched the feed response with a provider-independent `userState` through one MongoDB lookup for all returned articles.
+
+**Decisions:** Favorite and Read remain independent. Toggling either updates only its matching timestamp (`savedAt` or `readAt`); opening an article never marks it read. GET endpoints never create a state document, while an explicit PUT upserts one and retains it even when both flags are false. No frontend controls were added.
+
+**Verification:** Backend TypeScript, production build, development-server startup, and scoped diff validation were run. Runtime route validation remains required with a real Better Auth session and already-persisted articles, without unnecessary provider requests.
+
+**Next steps:** Sprint 4C can connect Favorite and Read controls to these APIs, add the Saved screen, and introduce the planned bottom navigation.
+
+## 2026-10-05 — Sprint 4A: article persistence foundation
+
+**Goal:** Persist the normalized articles returned by the feed and create the data model required for future independent Favorite and Read / Unread actions.
+
+**Changes:** Added `articles` with the normalized metadata needed by myNews and a unique `provider + externalId` index; added `userArticleStates` with the unique `userId + articleId` index; and updated `GET /api/v1/feed` to upsert normalized provider articles, refresh `fetchedAt`, and return their MongoDB ID as a string `id`.
+
+**Decisions:** The feed remains real-time and stores no full article content. The MongoDB `id` supplements rather than replaces the provider `externalId`. No state endpoints or frontend changes were added. Opening an article does not mark it as read; `isFavorite` and `isRead` are explicit, independent flags.
+
+**Verification:** Backend TypeScript validation and scoped diff validation were run. Persisted feed behavior requires runtime validation against MongoDB with an authenticated session and a provider key.
+
+**Next steps:** Sprint 4B can add protected backend endpoints for explicit favorite and read-status updates.
+
 ## 2026-10-02 — Sprint 3C: first personalized mobile feed
 
 **Goal:** Connect the React Native Home screen to the protected feed endpoint and display the first real personalized articles.
