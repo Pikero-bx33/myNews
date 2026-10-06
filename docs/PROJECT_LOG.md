@@ -1,5 +1,17 @@
 # Project Log
 
+## 2026-10-06 — Sprint 5B: consultation screens redesign
+
+**Goal:** Apply the Sprint 5A visual foundation to Home, Saved, the shared article card and bottom tabs without changing news, state or navigation behavior.
+
+**Changes:** Redesigned Home and Saved around the shared tokens and Inter typography; refined the shared article card with a stable image treatment, compact metadata, accessible 44 pt icon actions and clearer Read/Favorite states; added the shared empty state used by both lists; and polished the three bottom tabs with active/inactive Ionicons and tokenized styles.
+
+**Decisions:** Home and Saved preserve their local article lists and existing API calls. Redux remains limited to the shared article-state map; toggles still update it only after the existing API success. No backend, dependency, provider, cache, pagination or automatic feed refresh was added.
+
+**Verification:** Frontend TypeScript, ESLint and scoped diff validation passed. Expo Doctor remains at 20/21 because of the known duplicate `expo-constants` versions (57.0.20 and transitive 57.0.19); no dependency change was made. Metro starts in offline mode. Physical-device validation remains required before committing.
+
+**Next steps:** Validate visual rendering, safe areas, feed refresh, article opening and cross-tab Favorite/Read synchronization on iPhone; Profile, auth and onboarding redesign remain Sprint 5C scope.
+
 ## 2026-10-06 — Sprint 5A: visual identity and design-system foundation
 
 **Goal:** Define a coherent, light, editorial visual foundation without changing MVP behavior or redesigning the existing product screens.

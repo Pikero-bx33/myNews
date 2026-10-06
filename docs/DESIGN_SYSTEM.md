@@ -111,8 +111,10 @@ state where relevant).
 ### Article cards
 
 Article cards prioritize source/date, title, then optional description and
-image. They remain clean editorial surfaces: no heavy shadow, no nested cards
-and no decorative gradients.
+image. Images use a stable 16:9 crop. Cards remain clean editorial surfaces:
+one subtle border, no heavy shadow, no nested cards and no decorative
+gradients. The Favorite and Read controls are icon-only 44 × 44 pt targets
+with accessible labels and a subtle pressed background.
 
 ### Read and Favorite states
 

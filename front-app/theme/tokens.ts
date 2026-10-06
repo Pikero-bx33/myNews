@@ -39,49 +39,49 @@ export const radius = {
 export const typography = {
   display: {
     color: colors.textPrimary,
+    fontFamily: 'Inter_700Bold',
     fontSize: 28,
-    fontWeight: '700',
     lineHeight: 34,
   },
   screenTitle: {
     color: colors.textPrimary,
+    fontFamily: 'Inter_700Bold',
     fontSize: 24,
-    fontWeight: '700',
     lineHeight: 30,
   },
   sectionTitle: {
     color: colors.textPrimary,
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 20,
-    fontWeight: '600',
     lineHeight: 26,
   },
   cardTitle: {
     color: colors.textPrimary,
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 18,
-    fontWeight: '600',
     lineHeight: 24,
   },
   body: {
     color: colors.textPrimary,
+    fontFamily: 'Inter_400Regular',
     fontSize: 16,
-    fontWeight: '400',
     lineHeight: 24,
   },
   bodySecondary: {
     color: colors.textSecondary,
+    fontFamily: 'Inter_400Regular',
     fontSize: 15,
-    fontWeight: '400',
     lineHeight: 22,
   },
   caption: {
     color: colors.textSecondary,
+    fontFamily: 'Inter_500Medium',
     fontSize: 12,
-    fontWeight: '500',
     lineHeight: 16,
   },
   button: {
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 16,
-    fontWeight: '600',
     lineHeight: 20,
   },
 } satisfies Record<string, TextStyle>;

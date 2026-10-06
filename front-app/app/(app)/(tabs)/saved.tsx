@@ -1,15 +1,17 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ArticleCard } from '@/components/feed/article-card';
+import { EmptyState } from '@/components/ui/empty-state';
 import { updateArticleState, type ArticleUserState } from '@/lib/api/articles';
 import { getFavorites } from '@/lib/api/favorites';
 import type { FeedArticle } from '@/lib/api/feed';
 import { hydrateArticleStates, setArticleState, toArticleStatesById } from '@/store/article-states-slice';
 import type { AppDispatch, RootState } from '@/store/store';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export default function SavedScreen() {
   const insets = useSafeAreaInsets();
@@ -68,7 +70,7 @@ export default function SavedScreen() {
   if (isLoading) {
     return (
       <View style={styles.centeredContainer}>
-        <ActivityIndicator color="#2563EB" size="large" />
+        <ActivityIndicator color={colors.primary} size="large" />
         <Text style={styles.loadingText}>Chargement de vos articles enregistrés…</Text>
       </View>
     );
@@ -78,7 +80,12 @@ export default function SavedScreen() {
     return (
       <View style={styles.centeredContainer}>
         <Text style={styles.error}>{errorMessage}</Text>
-        <Button onPress={() => void loadFavorites()} title="Réessayer" />
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => void loadFavorites()}
+          style={({ pressed }) => [styles.retryButton, pressed && styles.retryButtonPressed]}>
+          <Text style={styles.retryButtonText}>Réessayer</Text>
+        </Pressable>
       </View>
     );
   }
@@ -92,12 +99,11 @@ export default function SavedScreen() {
       data={articles}
       keyExtractor={(article) => article.id}
       ListEmptyComponent={
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>Aucun article enregistré</Text>
-          <Text style={styles.emptyText}>
-            Enregistrez des articles depuis votre fil pour les retrouver ici.
-          </Text>
-        </View>
+        <EmptyState
+          iconName="bookmark-outline"
+          message="Enregistrez des articles depuis votre fil pour les retrouver ici."
+          title="Aucun article enregistré"
+        />
       }
       ListHeaderComponent={
         <View style={styles.header}>
@@ -133,20 +139,32 @@ export default function SavedScreen() {
 const styles = StyleSheet.create({
   centeredContainer: {
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     flex: 1,
-    gap: 16,
+    gap: spacing.lg,
     justifyContent: 'center',
-    padding: 24,
+    padding: spacing.xl,
   },
-  emptyContainer: { alignItems: 'center', paddingHorizontal: 24, paddingTop: 64 },
-  emptyText: { color: '#6B7280', fontSize: 16, lineHeight: 24, textAlign: 'center' },
-  emptyTitle: { color: '#111827', fontSize: 20, fontWeight: '700', marginBottom: 8 },
-  error: { color: '#EF4444', fontSize: 15, lineHeight: 22, textAlign: 'center' },
-  header: { gap: 8, marginBottom: 24 },
+  error: { ...typography.bodySecondary, color: colors.error, textAlign: 'center' },
+  header: { gap: spacing.sm, marginBottom: spacing.xl },
   list: { flex: 1 },
-  listContent: { backgroundColor: '#F9FAFB', flexGrow: 1, gap: 16, padding: 24 },
-  loadingText: { color: '#6B7280', fontSize: 16 },
-  subtitle: { color: '#6B7280', fontSize: 16, lineHeight: 24 },
-  title: { color: '#111827', fontSize: 30, fontWeight: '700' },
+  listContent: {
+    backgroundColor: colors.background,
+    flexGrow: 1,
+    gap: spacing.lg,
+    paddingHorizontal: spacing.xl,
+  },
+  loadingText: { ...typography.bodySecondary, textAlign: 'center' },
+  retryButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: spacing.lg,
+  },
+  retryButtonPressed: { backgroundColor: colors.primaryLight },
+  retryButtonText: { ...typography.button, color: colors.surface },
+  subtitle: { ...typography.bodySecondary },
+  title: { ...typography.screenTitle },
 });

@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { GestureResponderEvent, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { FeedArticle } from '@/lib/api/feed';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 type ArticleCardProps = {
   article: FeedArticle;
@@ -65,7 +66,7 @@ export function ArticleCard({ article, onToggleFavorite, onToggleRead }: Article
         />
       ) : (
         <View accessibilityLabel="Image de l’article indisponible" style={styles.imageFallback}>
-          <Text style={styles.imageFallbackText}>MyNews</Text>
+          <Ionicons accessible={false} color={colors.primary} name="newspaper-outline" size={30} />
         </View>
       )}
       <View style={styles.content}>
@@ -73,7 +74,7 @@ export function ArticleCard({ article, onToggleFavorite, onToggleRead }: Article
           <Text numberOfLines={1} style={styles.source}>
             {article.sourceName}
           </Text>
-          <Text style={styles.date}>{formatPublishedAt(article.publishedAt)}</Text>
+          <Text style={styles.date}>· {formatPublishedAt(article.publishedAt)}</Text>
         </View>
         <Text style={[styles.title, article.userState.isRead && styles.readTitle]}>{article.title}</Text>
         {article.description ? (
@@ -90,30 +91,36 @@ export function ArticleCard({ article, onToggleFavorite, onToggleRead }: Article
           <Pressable
             accessibilityLabel={article.userState.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
             accessibilityRole="button"
+            accessibilityState={{ disabled: pendingAction !== null }}
             disabled={pendingAction !== null}
             onPress={(event) => void toggleAction(event, 'favorite', onToggleFavorite)}
-            style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            style={({ pressed }) => [
+              styles.actionButton,
+              pendingAction !== null && styles.actionButtonDisabled,
+              pressed && styles.actionButtonPressed,
+            ]}>
             <Ionicons
-              color={article.userState.isFavorite ? '#2563EB' : '#6B7280'}
+              color={article.userState.isFavorite ? colors.iconActive : colors.iconDefault}
               name={article.userState.isFavorite ? 'bookmark' : 'bookmark-outline'}
               size={22}
             />
-            <Text style={styles.actionLabel}>
-              {article.userState.isFavorite ? 'Enregistré' : 'Enregistrer'}
-            </Text>
           </Pressable>
           <Pressable
             accessibilityLabel={article.userState.isRead ? 'Marquer comme non lu' : 'Marquer comme lu'}
             accessibilityRole="button"
+            accessibilityState={{ disabled: pendingAction !== null }}
             disabled={pendingAction !== null}
             onPress={(event) => void toggleAction(event, 'read', onToggleRead)}
-            style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            style={({ pressed }) => [
+              styles.actionButton,
+              pendingAction !== null && styles.actionButtonDisabled,
+              pressed && styles.actionButtonPressed,
+            ]}>
             <Ionicons
-              color={article.userState.isRead ? '#10B981' : '#6B7280'}
+              color={article.userState.isRead ? colors.success : colors.iconDefault}
               name={article.userState.isRead ? 'checkmark-circle' : 'checkmark-circle-outline'}
               size={22}
             />
-            <Text style={styles.actionLabel}>{article.userState.isRead ? 'Lu' : 'Non lu'}</Text>
           </Pressable>
         </View>
       </View>
@@ -122,37 +129,40 @@ export function ArticleCard({ article, onToggleFavorite, onToggleRead }: Article
 }
 
 const styles = StyleSheet.create({
-  actionButton: { alignItems: 'center', flexDirection: 'row', gap: 6, paddingVertical: 4 },
-  actionButtonPressed: { opacity: 0.65 },
-  actionLabel: { color: '#374151', fontSize: 13, fontWeight: '600' },
-  actions: { flexDirection: 'row', gap: 20, marginTop: 2 },
+  actionButton: {
+    alignItems: 'center',
+    borderRadius: radius.sm,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  actionButtonDisabled: { opacity: 0.45 },
+  actionButtonPressed: { backgroundColor: colors.primarySoft },
+  actions: { flexDirection: 'row', gap: spacing.xs, marginLeft: -spacing.sm, marginTop: spacing.xs },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
   },
-  cardPressed: { opacity: 0.78 },
-  content: { gap: 8, padding: 16 },
-  date: { color: '#6B7280', fontSize: 13 },
-  description: { color: '#6B7280', fontSize: 15, lineHeight: 22 },
-  image: { backgroundColor: '#E5E7EB', height: 180, width: '100%' },
+  cardPressed: { opacity: 0.86 },
+  content: { gap: spacing.sm, padding: spacing.lg },
+  date: { ...typography.caption, color: colors.textSecondary },
+  description: { ...typography.bodySecondary },
+  image: { aspectRatio: 16 / 9, backgroundColor: colors.border, width: '100%' },
   imageFallback: {
     alignItems: 'center',
-    backgroundColor: '#DBEAFE',
-    height: 132,
+    aspectRatio: 16 / 9,
+    backgroundColor: colors.primarySoft,
     justifyContent: 'center',
   },
-  imageFallbackText: { color: '#2563EB', fontSize: 16, fontWeight: '700' },
   meta: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'space-between',
   },
-  readTitle: { color: '#6B7280' },
-  source: { color: '#2563EB', flex: 1, fontSize: 13, fontWeight: '700' },
-  title: { color: '#111827', fontSize: 19, fontWeight: '700', lineHeight: 25 },
-  topics: { color: '#6B7280', fontSize: 13, fontWeight: '600', textTransform: 'capitalize' },
+  readTitle: { color: colors.textSecondary },
+  source: { ...typography.caption, color: colors.primary, flex: 1 },
+  title: { ...typography.cardTitle },
+  topics: { ...typography.caption, color: colors.textSecondary, textTransform: 'capitalize' },
 });
