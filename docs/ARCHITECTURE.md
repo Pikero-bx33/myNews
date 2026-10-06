@@ -297,7 +297,12 @@ GET   /api/v1/preferences
 PUT   /api/v1/preferences
 ```
 
-After a preference update, subsequent feed requests must use the new preferences.
+The mobile Edit Preferences screen reads the existing document before showing
+its form, keeps its transient changes in local component state, and sends the
+complete resource back through the same protected `PUT` endpoint. Source
+preferences remain in the payload even while their UI is deferred, so they are
+not silently erased. After a preference update, subsequent feed requests must
+use the new preferences; saving itself does not trigger a feed request.
 
 One user should normally have one preferences document.
 

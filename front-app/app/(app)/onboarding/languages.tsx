@@ -1,16 +1,14 @@
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { OnboardingScreen } from '@/components/onboarding/onboarding-screen';
 import { SelectableChip } from '@/components/onboarding/selectable-chip';
+import { contentLanguageOptions } from '@/components/preferences/options';
+import { PrimaryButton } from '@/components/ui/primary-button';
 import type { ContentLanguage } from '@/lib/api/preferences';
+import { spacing } from '@/theme/tokens';
 
 import { useOnboarding } from './_layout';
-
-const languages: { label: string; value: ContentLanguage }[] = [
-  { label: 'Français', value: 'fr' },
-  { label: 'English', value: 'en' },
-];
 
 export default function LanguagesScreen() {
   const { contentLanguages, setContentLanguages } = useOnboarding();
@@ -29,7 +27,7 @@ export default function LanguagesScreen() {
       step={1}
       title="Vos langues de contenu">
       <View style={styles.choices}>
-        {languages.map((language) => (
+        {contentLanguageOptions.map((language) => (
           <SelectableChip
             key={language.value}
             label={language.label}
@@ -38,10 +36,10 @@ export default function LanguagesScreen() {
           />
         ))}
       </View>
-      <Button
+      <PrimaryButton
         disabled={contentLanguages.length === 0}
         onPress={() => router.push('/onboarding/topics')}
-        title="Continuer"
+        label="Continuer"
       />
     </OnboardingScreen>
   );
@@ -51,6 +49,6 @@ const styles = StyleSheet.create({
   choices: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: spacing.md,
   },
 });

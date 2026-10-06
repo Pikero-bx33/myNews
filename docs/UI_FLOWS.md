@@ -59,4 +59,25 @@ Authenticated application
 └── Profil → account email and logout
 ```
 
-The Saved tab loads persisted favorites on screen focus and never calls TheNewsAPI. Removing a favorite removes it locally from Saved after the backend confirms the change; the shared state immediately updates the Home card too. Changing Read keeps the article in Saved and updates the shared state. The Profile tab does not yet link to preference editing because the onboarding screens are not yet an editing flow with prefilled values.
+The Saved tab loads persisted favorites on screen focus and never calls TheNewsAPI. Removing a favorite removes it locally from Saved after the backend confirms the change; the shared state immediately updates the Home card too. Changing Read keeps the article in Saved and updates the shared state. Profile displays the authenticated email, an Edit Preferences action and logout.
+
+## Edit preferences
+
+```text
+Profile
+→ Edit preferences
+→ GET /api/v1/preferences
+├── loading → hydrated languages, topics and keywords form
+├── error → Retry
+└── preferences: null → configuration-not-found error
+
+Save preferences
+→ PUT /api/v1/preferences (complete resource)
+→ Profile
+```
+
+Edit Preferences keeps its form state local. It hydrates the existing document
+before rendering controls and retains the loaded `preferredSources` and
+`blockedSources` values when saving, even though source settings have no UI
+yet. Saving does not request `/api/v1/feed`; a later normal feed request uses
+the updated persisted preferences.

@@ -126,4 +126,23 @@ The authenticated app has three tabs:
 - **Enregistrés**: persisted favorite articles, ordered by the most recently saved.
 - **Profil**: the signed-in email address and logout.
 
-Saved articles come from MongoDB through the backend and do not trigger a news-provider request. A user can remove a favorite or mark an article Read / Unread directly from this screen. Preference editing remains a future Profile step because the existing onboarding flow is not yet designed to edit and prefill saved preferences.
+Saved articles come from MongoDB through the backend and do not trigger a news-provider request. A user can remove a favorite or mark an article Read / Unread directly from this screen. Profile also provides access to preference editing.
+
+## Edit preferences
+
+An existing user can open **Profil**, choose **Modifier mes préférences**, and
+wait for the saved preference document to load before making changes. Languages
+and topics still require at least one selection; keywords remain optional.
+
+```text
+Profile
+→ Edit preferences
+→ existing preferences loaded
+→ change languages, topics or keywords
+→ save
+→ Profile
+```
+
+Saving sends the complete preference resource to the existing protected API.
+The app preserves source preferences that are already stored but not yet
+editable in the UI. It does not refresh the provider feed automatically.

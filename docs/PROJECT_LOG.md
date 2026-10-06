@@ -1,5 +1,17 @@
 # Project Log
 
+## 2026-10-06 — Sprint 5C: account and preferences experience
+
+**Goal:** Complete the Sprint 5 visual redesign for authentication, onboarding and Profile, while adding the first hydrated Edit Preferences journey.
+
+**Changes:** Redesigned Login, Register, onboarding and Profile with shared tokens and Inter; added lightweight shared buttons and form field primitives; added an Edit Preferences route with loading, retry, hydration and save states; and reused shared preference chips, options and keyword editing UI.
+
+**Decisions:** Better Auth, Secure Store, routing guards and Redux remain unchanged. First onboarding retains its local Context; Edit Preferences uses separate local state after `GET /api/v1/preferences`. Its complete PUT preserves loaded `preferredSources` and `blockedSources` although their UI remains deferred. Saving does not refresh the news feed.
+
+**Verification:** Frontend TypeScript, ESLint and scoped diff validation passed. Expo Doctor remains at 20/21 because of the known duplicate `expo-constants` versions (57.0.20 and transitive 57.0.19); no dependency change was made. Metro starts in offline mode. Physical-device validation remains required before committing.
+
+**Next steps:** Validate authentication, onboarding, hydrated preference editing, persistence, safe areas and keyboard behavior on iPhone; Sprint 5 UI redesign is complete once those checks pass.
+
 ## 2026-10-06 — Sprint 5B: consultation screens redesign
 
 **Goal:** Apply the Sprint 5A visual foundation to Home, Saved, the shared article card and bottom tabs without changing news, state or navigation behavior.

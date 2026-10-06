@@ -100,6 +100,12 @@ targets; Sprint 5A does not add an unused component library.
 - Disabled controls reduce emphasis and remain readable; they are not the only
   way to communicate why an action is unavailable.
 
+The implemented `PrimaryButton` supplies a 48 pt primary action with loading
+and disabled states. `TextButton` is used for secondary navigation and a
+destructive session action. `FormField` pairs a persistent visible label with
+one native input and a clear focus border; it is intentionally not a form
+framework.
+
 ### Chips
 
 The existing selectable chip is used for preference selection. Its inactive
@@ -107,6 +113,9 @@ state is a white surface with border; its selected state uses `primarySoft`, a
 `primary` border or icon, and a text label that remains legible. Selection
 must be understandable without color alone (checkmark, icon or explicit
 state where relevant).
+
+The selected implementation adds a checkmark, so the selected state is not
+communicated by color alone.
 
 ### Article cards
 

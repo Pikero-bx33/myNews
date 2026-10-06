@@ -1,22 +1,14 @@
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { OnboardingScreen } from '@/components/onboarding/onboarding-screen';
 import { SelectableChip } from '@/components/onboarding/selectable-chip';
+import { topicOptions } from '@/components/preferences/options';
+import { PrimaryButton } from '@/components/ui/primary-button';
+import { TextButton } from '@/components/ui/text-button';
+import { spacing } from '@/theme/tokens';
 
 import { useOnboarding } from './_layout';
-
-const topics = [
-  { label: 'Sport', slug: 'sport' },
-  { label: 'Technology', slug: 'technology' },
-  { label: 'Science', slug: 'science' },
-  { label: 'Politics', slug: 'politics' },
-  { label: 'Business', slug: 'business' },
-  { label: 'Cinema', slug: 'cinema' },
-  { label: 'Culture', slug: 'culture' },
-  { label: 'Food', slug: 'food' },
-  { label: 'Health', slug: 'health' },
-];
 
 export default function TopicsScreen() {
   const { setTopics, topics: selectedTopics } = useOnboarding();
@@ -35,7 +27,7 @@ export default function TopicsScreen() {
       step={2}
       title="Vos centres d’intérêt">
       <View style={styles.choices}>
-        {topics.map((topic) => (
+        {topicOptions.map((topic) => (
           <SelectableChip
             key={topic.slug}
             label={topic.label}
@@ -45,11 +37,11 @@ export default function TopicsScreen() {
         ))}
       </View>
       <View style={styles.actions}>
-        <Button onPress={() => router.replace('/onboarding/languages')} title="Retour" />
-        <Button
+        <TextButton label="Retour" onPress={() => router.replace('/onboarding/languages')} />
+        <PrimaryButton
           disabled={selectedTopics.length === 0}
           onPress={() => router.push('/onboarding/keywords')}
-          title="Continuer"
+          label="Continuer"
         />
       </View>
     </OnboardingScreen>
@@ -57,13 +49,10 @@ export default function TopicsScreen() {
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  actions: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   choices: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: spacing.md,
   },
 });

@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 type OnboardingScreenProps = {
   children: ReactNode;
@@ -13,68 +15,58 @@ export function OnboardingScreen({ children, description, step, title }: Onboard
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.container,
-        {
-          paddingBottom: insets.bottom + 40,
-          paddingTop: insets.top + 24,
-        },
-      ]}
-      keyboardShouldPersistTaps="handled">
-      <View style={styles.progressContainer}>
-        <Text style={styles.progress}>Étape {step} / 3</Text>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressValue, { width: `${(step / 3) * 100}%` }]} />
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboardView}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          {
+            paddingBottom: insets.bottom + spacing.xxl,
+            paddingTop: insets.top + spacing.xl,
+          },
+        ]}
+        keyboardShouldPersistTaps="handled">
+        <View style={styles.progressContainer}>
+          <Text style={styles.progress}>Étape {step} / 3</Text>
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressValue, { width: `${(step / 3) * 100}%` }]} />
+          </View>
         </View>
-      </View>
-      <View style={styles.heading}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
-      </View>
-      {children}
-    </ScrollView>
+        <View style={styles.heading}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.description}>{description}</Text>
+        </View>
+        {children}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     flexGrow: 1,
-    gap: 28,
-    padding: 24,
-    paddingBottom: 40,
+    gap: spacing.xxl,
+    paddingHorizontal: spacing.xl,
   },
-  description: {
-    color: '#6B7280',
-    fontSize: 16,
-    lineHeight: 24,
-  },
+  description: { ...typography.bodySecondary },
   heading: {
-    gap: 8,
+    gap: spacing.sm,
   },
-  progress: {
-    color: '#6B7280',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  keyboardView: { flex: 1 },
+  progress: { ...typography.caption },
   progressContainer: {
-    gap: 8,
+    gap: spacing.sm,
   },
   progressTrack: {
-    backgroundColor: '#E5E7EB',
-    borderRadius: 4,
+    backgroundColor: colors.border,
+    borderRadius: radius.pill,
     height: 6,
     overflow: 'hidden',
   },
   progressValue: {
-    backgroundColor: '#2563EB',
-    borderRadius: 4,
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
     height: '100%',
   },
-  title: {
-    color: '#111827',
-    fontSize: 30,
-    fontWeight: '700',
-  },
+  title: { ...typography.display },
 });

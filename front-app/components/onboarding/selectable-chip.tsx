@@ -1,4 +1,7 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 type SelectableChipProps = {
   label: string;
@@ -12,31 +15,33 @@ export function SelectableChip({ label, onPress, selected }: SelectableChipProps
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={[styles.chip, selected && styles.selectedChip]}>
-      <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
+      style={({ pressed }) => [styles.chip, selected && styles.selectedChip, pressed && styles.pressed]}>
+      <View style={styles.content}>
+        <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
+        {selected ? <Ionicons accessible={false} color={colors.primary} name="checkmark" size={16} /> : null}
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   chip: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radius.md,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    minHeight: 44,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
-  label: {
-    color: '#111827',
-    fontSize: 16,
-    fontWeight: '500',
-  },
+  content: { alignItems: 'center', flexDirection: 'row', gap: spacing.xs },
+  label: { ...typography.body, color: colors.textPrimary },
+  pressed: { opacity: 0.72 },
   selectedChip: {
-    backgroundColor: '#DBEAFE',
-    borderColor: '#2563EB',
+    backgroundColor: colors.primarySoft,
+    borderColor: colors.primary,
   },
   selectedLabel: {
-    color: '#1D4ED8',
+    color: colors.primary,
   },
 });
