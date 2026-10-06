@@ -1,5 +1,17 @@
 # Project Log
 
+## 2026-10-06 — Sprint 5A: visual identity and design-system foundation
+
+**Goal:** Define a coherent, light, editorial visual foundation without changing MVP behavior or redesigning the existing product screens.
+
+**Changes:** Added shared frontend color, spacing, radius and typography tokens; aligned the root navigation theme and status bar with the light myNews palette; and expanded the design-system reference with hierarchy, component-family rules, feedback states, navigation, accessibility and brand-asset guidance.
+
+**Decisions:** Existing Home, Saved, onboarding, Profile and article-card layouts remain untouched and will adopt tokens progressively in later visual work. No unused component library, dependency, backend change or generated image was introduced. Inter (400, 500, 600 and 700) is loaded in the root layout before the app renders, while screen-level `fontFamily` adoption remains a later visual migration. Current Expo icon, splash and favicon assets are documented as temporary generic assets pending an approved logo direction.
+
+**Verification:** Frontend TypeScript, ESLint and scoped diff validation passed. Expo Doctor passed 20/21 checks and retained the pre-existing duplicate `expo-constants` versions (57.0.20 and transitive 57.0.19); no dependency change was made. Metro starts successfully in offline mode. Device visual validation remains the next step because Sprint 5A changes the shared navigation foundation only.
+
+**Next steps:** Validate the light root navigation on iOS and Android, approve the logo direction, then migrate one bounded screen group to the tokens and introduce a shared primitive only where that migration needs it.
+
 ## 2026-10-05 — Backend maintenance: Mongoose and development logs
 
 Migrated the two deprecated Mongoose `new: true` options to `returnDocument: "after"` without changing update behavior. Added a development-only HTTP logger that records method, path, status, and duration only.
