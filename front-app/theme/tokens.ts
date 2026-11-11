@@ -5,6 +5,8 @@ import type { TextStyle } from 'react-native';
  * Screens will adopt these tokens progressively during the visual redesign.
  */
 export const colors = {
+  brandBlack: '#0B0B0D',
+  brandRed: '#FF1F3D',
   background: '#F9FAFB',
   surface: '#FFFFFF',
   primary: '#2563EB',

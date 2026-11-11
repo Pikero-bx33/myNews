@@ -37,10 +37,31 @@ not restyle them.
 | `border` | `#E5E7EB` | Delicate separators and control outlines |
 | `success` | `#10B981` | Confirmed success only |
 | `error` | `#EF4444` | Errors and destructive feedback only |
+| `brandBlack` | `#0B0B0D` | myNews wordmark and brand artwork only |
+| `brandRed` | `#FF1F3D` | myNews brand accent only |
 
 Blue communicates navigation and action; it must not be used as a general
-background. Color is never the only indicator of an error, selected state or
-read state.
+background. Brand red and black identify myNews; they do not replace blue for
+CTAs, links, selected states or navigation. Color is never the only indicator
+of an error, selected state or read state.
+
+## Brand identity
+
+`assets/branding/mynews-logo.png` is the horizontal logo for light surfaces.
+Use it sparingly in prominent branding contexts: the Login and Register
+headers, and the compact Home header. Preserve its 3:1 ratio with `contain`;
+it is decorative when adjacent text already identifies the context.
+
+`mynews-logo-inverse.png` is reserved for an existing dark surface. No current
+screen uses it. `mynews-mark.png` remains available for future compact brand
+contexts and must not replace functional product icons.
+
+The web favicon and the Expo splash image use their dedicated branding assets.
+The splash is a centered `contain` logo over `#F9FAFB`. The current app-icon
+asset has transparent pixels, so it is not yet suitable for the required
+opaque iOS app icon; keep the existing native icon configuration until an
+opaque square asset is supplied. Android keeps its existing adaptive-icon
+assets until dedicated adaptive artwork is prepared.
 
 ## Typography
 
@@ -160,14 +181,9 @@ tokens so system navigation surfaces cannot conflict with app screens.
 - Respect screen-reader order: context, content, then actions.
 - Test text scaling and long French labels before considering a screen done.
 
-## Brand assets
+## Native asset follow-up
 
-The current Expo icon, Android adaptive assets, splash image and favicon are
-generic project assets. They are not the myNews visual identity and should be
-replaced together after a logo direction is approved. The future mark should
-be simple, editorial and legible at small sizes; avoid literal newspaper
-illustrations and detailed imagery. Until then, no generated asset is added.
-
-When assets are approved, update the icon, adaptive foreground/background and
-monochrome files, splash artwork/background and web favicon in `app.json`,
-then verify iOS, Android and web rendering.
+Before a native release, provide an opaque iOS app-icon export that fills its
+square canvas and dedicated Android adaptive foreground, background and
+monochrome assets. Verify icon, splash and favicon rendering in native builds
+as well as in Expo Go and web.

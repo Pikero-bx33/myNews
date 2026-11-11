@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BrandLogo } from '@/components/branding/brand-logo';
 import { FormField } from '@/components/ui/form-field';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { TextButton } from '@/components/ui/text-button';
@@ -33,35 +34,41 @@ export default function RegisterScreen() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboardView}>
       <ScrollView
-        contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xl, paddingTop: insets.top + spacing.xl }]}
+        contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xxl, paddingTop: insets.top + spacing.xl }]}
         keyboardShouldPersistTaps="handled">
         <View style={styles.branding}>
-          <Text style={styles.appName}>myNews</Text>
+          <View style={styles.logoContainer}>
+            <BrandLogo width={144} />
+          </View>
           <Text style={styles.title}>Créer votre compte</Text>
           <Text style={styles.subtitle}>Personnalisez votre fil d’actualité en quelques instants.</Text>
         </View>
         <View style={styles.form}>
-          <FormField autoCapitalize="words" label="Nom" onChangeText={setName} placeholder="Votre nom" value={name} />
-          <FormField
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            label="Adresse e-mail"
-            onChangeText={setEmail}
-            placeholder="vous@exemple.com"
-            value={email}
-          />
-          <FormField
-            autoCapitalize="none"
-            autoCorrect={false}
-            label="Mot de passe"
-            onChangeText={setPassword}
-            placeholder="Choisissez un mot de passe"
-            secureTextEntry
-            value={password}
-          />
-          {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-          <PrimaryButton label="Créer un compte" loading={isSubmitting} onPress={() => void handleSignUp()} />
+          <View style={styles.fields}>
+            <FormField autoCapitalize="words" label="Nom" onChangeText={setName} placeholder="Votre nom" value={name} />
+            <FormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              label="Adresse e-mail"
+              onChangeText={setEmail}
+              placeholder="vous@exemple.com"
+              value={email}
+            />
+            <FormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              label="Mot de passe"
+              onChangeText={setPassword}
+              placeholder="Choisissez un mot de passe"
+              secureTextEntry
+              value={password}
+            />
+            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+          </View>
+          <View style={styles.primaryAction}>
+            <PrimaryButton label="Créer un compte" loading={isSubmitting} onPress={() => void handleSignUp()} />
+          </View>
         </View>
         <View style={styles.footer}>
           <Text style={styles.footerText}>Vous avez déjà un compte ?</Text>
@@ -73,19 +80,21 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  appName: { ...typography.button, color: colors.primary },
-  branding: { gap: spacing.sm },
+  branding: { gap: spacing.md },
   container: {
     backgroundColor: colors.background,
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingHorizontal: spacing.xl,
   },
   error: { ...typography.bodySecondary, color: colors.error },
+  fields: { gap: spacing.lg, marginBottom: 50 },
   footer: { alignItems: 'center', gap: spacing.xs, marginTop: spacing.xxl },
   footerText: { ...typography.bodySecondary, textAlign: 'center' },
-  form: { gap: spacing.lg, marginTop: spacing.xxl },
+  form: { marginTop: spacing.xxl },
   keyboardView: { flex: 1 },
-  subtitle: { ...typography.bodySecondary },
-  title: { ...typography.display },
+  logoContainer: { alignItems: 'center', marginBottom: 50 },
+  primaryAction: { marginTop: spacing.xxl },
+  subtitle: { ...typography.bodySecondary, marginBottom: 30 },
+  title: { ...typography.display, fontSize: 26, lineHeight: 32 },
 });

@@ -12,6 +12,7 @@ import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BrandLogo } from '@/components/branding/brand-logo';
 import { ArticleCard } from '@/components/feed/article-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { updateArticleState, type ArticleUserState } from '@/lib/api/articles';
@@ -150,7 +151,9 @@ export default function HomeScreen() {
       }
       ListHeaderComponent={
         <View style={styles.header}>
-          <Text style={styles.appName}>myNews</Text>
+          <View style={styles.logoContainer}>
+            <BrandLogo width={144} />
+          </View>
           <Text style={styles.title}>Vos actualités</Text>
           <Text style={styles.subtitle}>Votre sélection, selon vos centres d’intérêt.</Text>
           {actionError ? <Text style={styles.error}>{actionError}</Text> : null}
@@ -188,7 +191,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  appName: { ...typography.button, color: colors.primary },
   centeredContainer: {
     alignItems: 'center',
     backgroundColor: colors.background,
@@ -207,6 +209,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   loadingText: { ...typography.bodySecondary, textAlign: 'center' },
+  logoContainer: { alignItems: 'center', marginBottom: spacing.md },
   retryButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,

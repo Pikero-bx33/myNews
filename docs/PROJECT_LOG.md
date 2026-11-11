@@ -1,5 +1,15 @@
 # Project Log
 
+## 2026-11-11 — Sprint 5D: final branding
+
+**Goal:** Integrate the approved myNews branding assets without changing product behavior.
+
+**Changes:** Added the shared horizontal logo to Login, Register and the compact Home header; configured the branded splash and web favicon; and documented the brand black/red distinction from the interaction blue.
+
+**Decisions:** Product blue remains the interaction color. The inverse logo is deferred because no dark surface needs it, Android keeps its existing adaptive assets, and the supplied app icon is not configured as the final iOS icon because it contains transparent pixels.
+
+**Verification:** Frontend static checks and physical-device validation remain required. No authentication, preferences, feed, Redux or backend logic changed.
+
 ## 2026-10-06 — Sprint 5C: account and preferences experience
 
 **Goal:** Complete the Sprint 5 visual redesign for authentication, onboarding and Profile, while adding the first hydrated Edit Preferences journey.
