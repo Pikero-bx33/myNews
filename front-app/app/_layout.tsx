@@ -61,7 +61,7 @@ export default function RootLayout() {
             <Stack.Protected guard={!session}>
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             </Stack.Protected>
-            <Stack.Protected guard={Boolean(session)}>
+            <Stack.Protected guard={Boolean(session)} redirectTo="/login">
               <Stack.Screen name="(app)" options={{ headerShown: false }} />
             </Stack.Protected>
           </Stack>
