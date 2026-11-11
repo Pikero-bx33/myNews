@@ -27,13 +27,17 @@ export default function TabsLayout() {
           borderTopWidth: 1,
           paddingTop: spacing.xs,
         },
-        tabBarIcon: ({ color, focused, size }) => (
-          <Ionicons
-            color={color}
-            name={tabIcons[route.name as keyof typeof tabIcons][focused ? 'active' : 'inactive']}
-            size={size}
-          />
-        ),
+        tabBarIcon: ({ color, focused, size }) => {
+          const iconColor = color === null || typeof color === 'number' ? colors.iconDefault : color;
+
+          return (
+            <Ionicons
+              color={iconColor}
+              name={tabIcons[route.name as keyof typeof tabIcons][focused ? 'active' : 'inactive']}
+              size={size}
+            />
+          );
+        },
       })}>
       <Tabs.Screen name="home" options={{ title: 'Accueil' }} />
       <Tabs.Screen name="saved" options={{ title: 'Enregistrés' }} />
