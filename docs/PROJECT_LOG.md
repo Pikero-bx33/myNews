@@ -1,5 +1,15 @@
 # Project Log
 
+## 2026-11-12 — Sprint 6A: explicit feed pagination
+
+**Goal:** Let an authenticated user explicitly load the next small page of their personalized feed without changing the provider quota strategy or durable-state architecture.
+
+**Changes:** Added strict positive-integer `page` validation to `GET /api/v1/feed`, forwarded the page to TheNewsAPI, retained provider metadata internally to return `{ articles, pagination: { page, hasMore } }`, and removed duplicate normalized provider articles before MongoDB persistence. The provider request now restricts results to the preceding seven UTC calendar days and explicitly sorts by publication date, including for keyword searches. Home now requests page 1 initially and on refresh, provides an explicit **Voir plus d’articles** action, appends by persisted article ID, and retains already loaded cards if loading another page fails.
+
+**Decisions:** `FEED_LIMIT = 3` remains backend-only. An empty seven-day result stays empty rather than silently widening the freshness window. Each initial load, refresh, or Load More action performs one request; no infinite scroll, prefetch, polling, cache, Redux feed list, or business-logic change was introduced. Redux remains limited to the shared in-memory article-state map.
+
+**Verification:** Static checks and development-server startup are recorded after the implementation checks complete. Authenticated end-to-end pagination requires a physical device with valid preferences and consumes provider quota, so it is intentionally left for manual validation.
+
 ## 2026-11-11 — Sprint 5D: final branding
 
 **Goal:** Integrate the approved myNews branding assets without changing product behavior.

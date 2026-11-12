@@ -532,7 +532,7 @@ Return personalized feed
 React Native App
 ```
 
-The route makes one provider request per feed call, currently limited to three articles by the free plan. After normalization, it upserts each article into MongoDB by `provider + externalId`, updates `fetchedAt`, then returns the provider-independent feed contract with the persisted MongoDB ID as `id` and the current user's `userState`. The state lookup is one query for all feed article IDs; it never creates missing `UserArticleState` documents. It performs no cache, pagination, multi-request batching, filtering, or ranking yet. If preferences are not persisted, it returns `409 Preferences required` without calling the provider.
+The route accepts an optional positive-integer `page` query parameter, defaulting to 1, and makes one provider request per call, currently limited to three articles by the free plan. It forwards that page to TheNewsAPI, removes duplicate normalized `provider + externalId` articles before persistence, upserts the remaining metadata, and updates `fetchedAt`. It returns the provider-independent feed contract with the persisted MongoDB ID as `id`, the current user's `userState`, and `{ pagination: { page, hasMore } }`; provider metadata is never exposed. The state lookup is one query for all feed article IDs and never creates missing `UserArticleState` documents. Home requests page 1 initially or on pull-to-refresh, and requests later pages only after the explicit Load More action; it appends by article ID. There is no cache, prefetch, automatic pagination, polling, multi-request batching, filtering, or ranking. If preferences are not persisted, the route returns `409 Preferences required` without calling the provider.
 
 Potential ranking signals:
 

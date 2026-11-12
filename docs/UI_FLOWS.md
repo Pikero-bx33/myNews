@@ -19,14 +19,15 @@ The onboarding state is local to the onboarding route group. Protected API calls
 
 ```text
 Home
-→ GET /api/v1/feed (with userState already included)
+→ GET /api/v1/feed?page=1 (with userState already included)
 ├── articles → Display article cards; tapping a card opens its URL in the system browser
+│              → Voir plus d’articles → GET /api/v1/feed?page=n → append new article IDs only
 ├── [] → Empty-feed state
 ├── 409 Preferences required → Onboarding
 └── network/provider error → Retry state
 ```
 
-The Home list supports pull-to-refresh. Each refresh makes one new feed request; this stays deliberately simple while TheNewsAPI's free plan returns at most three articles per request.
+The Home list supports pull-to-refresh. A refresh requests page 1 and replaces the loaded list; an explicit Load More failure keeps the existing cards and retries the same next page. Each action makes exactly one provider-backed feed request; there is no infinite scroll, prefetch or polling. TheNewsAPI's free plan still returns at most three articles per request.
 
 Each card exposes separate Favorite and Read / Unread controls. A successful toggle updates the shared in-memory `userState` for that article; Home and Saved therefore display the same current state without reloading the provider feed. Opening an article only opens the publisher URL and does **not** mark it as read.
 

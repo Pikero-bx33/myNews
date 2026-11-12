@@ -18,8 +18,12 @@ export type FeedArticle = {
   userState: ArticleUserState;
 };
 
-type FeedResponse = {
+export type FeedResponse = {
   articles: FeedArticle[];
+  pagination: {
+    page: number;
+    hasMore: boolean;
+  };
 };
 
 export class FeedRequestError extends Error {
@@ -34,11 +38,15 @@ const getErrorMessage = (status: number) => {
     return 'Votre session a expiré. Veuillez vous reconnecter.';
   }
 
+  if (status === 503) {
+    return 'Impossible de charger vos actualités pour le moment. Réessayez plus tard.';
+  }
+
   return 'Impossible de charger vos actualités. Réessayez.';
 };
 
-export async function getFeed(): Promise<FeedArticle[]> {
-  const response = await fetch(`${apiBaseUrl}/api/v1/feed`, {
+export async function getFeed(page = 1): Promise<FeedResponse> {
+  const response = await fetch(`${apiBaseUrl}/api/v1/feed?page=${page}`, {
     headers: await getAuthHeaders(),
   });
 
@@ -46,6 +54,5 @@ export async function getFeed(): Promise<FeedArticle[]> {
     throw new FeedRequestError(getErrorMessage(response.status), response.status);
   }
 
-  const body: FeedResponse = await response.json();
-  return body.articles;
+  return response.json() as Promise<FeedResponse>;
 }

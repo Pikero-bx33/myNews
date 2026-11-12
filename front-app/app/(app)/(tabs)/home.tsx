@@ -21,6 +21,18 @@ import { hydrateArticleStates, setArticleState, toArticleStatesById } from '@/st
 import type { AppDispatch, RootState } from '@/store/store';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
+const appendUniqueArticles = (currentArticles: FeedArticle[], nextArticles: FeedArticle[]) => {
+  const articlesById = new Map<string, FeedArticle>();
+
+  for (const article of [...currentArticles, ...nextArticles]) {
+    if (!articlesById.has(article.id)) {
+      articlesById.set(article.id, article);
+    }
+  }
+
+  return [...articlesById.values()];
+};
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch<AppDispatch>();
@@ -28,8 +40,12 @@ export default function HomeScreen() {
   const [articles, setArticles] = useState<FeedArticle[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const handleFeedError = useCallback((error: unknown) => {
     if (error instanceof FeedRequestError && error.status === 409) {
@@ -42,7 +58,7 @@ export default function HomeScreen() {
     );
   }, []);
 
-  const reloadFeed = useCallback(
+  const loadFirstPage = useCallback(
     async (isRefresh = false) => {
       if (isRefresh) {
         setIsRefreshing(true);
@@ -50,11 +66,14 @@ export default function HomeScreen() {
         setIsInitialLoading(true);
       }
       setErrorMessage(null);
+      setLoadMoreError(null);
 
       try {
-        const nextArticles = await getFeed();
-        setArticles(nextArticles);
-        dispatch(hydrateArticleStates(toArticleStatesById(nextArticles)));
+        const feed = await getFeed(1);
+        setArticles(feed.articles);
+        setPage(feed.pagination.page);
+        setHasMore(feed.pagination.hasMore);
+        dispatch(hydrateArticleStates(toArticleStatesById(feed.articles)));
       } catch (error) {
         handleFeedError(error);
       } finally {
@@ -67,6 +86,36 @@ export default function HomeScreen() {
     },
     [dispatch, handleFeedError],
   );
+
+  const loadMore = useCallback(async () => {
+    if (!hasMore || isLoadingMore) {
+      return;
+    }
+
+    const nextPage = page + 1;
+
+    setIsLoadingMore(true);
+    setLoadMoreError(null);
+
+    try {
+      const feed = await getFeed(nextPage);
+      setArticles((currentArticles) => appendUniqueArticles(currentArticles, feed.articles));
+      setPage(feed.pagination.page);
+      setHasMore(feed.pagination.hasMore);
+      dispatch(hydrateArticleStates(toArticleStatesById(feed.articles)));
+    } catch (error) {
+      if (error instanceof FeedRequestError && error.status === 409) {
+        router.replace('/onboarding/languages');
+        return;
+      }
+
+      setLoadMoreError(
+        error instanceof Error ? error.message : 'Impossible de charger plus d’actualités. Réessayez.',
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [dispatch, hasMore, isLoadingMore, page]);
 
   const updateLocalArticleState = useCallback(
     async (article: FeedArticle, update: { isFavorite?: boolean; isRead?: boolean }) => {
@@ -87,11 +136,13 @@ export default function HomeScreen() {
   useEffect(() => {
     let isMounted = true;
 
-    void getFeed()
-      .then((nextArticles) => {
+    void getFeed(1)
+      .then((feed) => {
         if (isMounted) {
-          setArticles(nextArticles);
-          dispatch(hydrateArticleStates(toArticleStatesById(nextArticles)));
+          setArticles(feed.articles);
+          setPage(feed.pagination.page);
+          setHasMore(feed.pagination.hasMore);
+          dispatch(hydrateArticleStates(toArticleStatesById(feed.articles)));
         }
       })
       .catch((error: unknown) => {
@@ -125,7 +176,7 @@ export default function HomeScreen() {
         <Text style={styles.error}>{errorMessage}</Text>
         <Pressable
           accessibilityRole="button"
-          onPress={() => void reloadFeed()}
+          onPress={() => void loadFirstPage()}
           style={({ pressed }) => [styles.retryButton, pressed && styles.retryButtonPressed]}>
           <Text style={styles.retryButtonText}>Réessayer</Text>
         </Pressable>
@@ -159,9 +210,34 @@ export default function HomeScreen() {
           {actionError ? <Text style={styles.error}>{actionError}</Text> : null}
         </View>
       }
+      ListFooterComponent={
+        hasMore ? (
+          <View style={styles.loadMoreContainer}>
+            {loadMoreError ? <Text style={styles.loadMoreError}>{loadMoreError}</Text> : null}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ busy: isLoadingMore, disabled: isLoadingMore }}
+              disabled={isLoadingMore}
+              onPress={() => void loadMore()}
+              style={({ pressed }) => [
+                styles.loadMoreButton,
+                isLoadingMore && styles.loadMoreButtonDisabled,
+                pressed && !isLoadingMore && styles.loadMoreButtonPressed,
+              ]}>
+              {isLoadingMore ? (
+                <ActivityIndicator color={colors.primary} />
+              ) : (
+                <Text style={styles.loadMoreButtonText}>
+                  {loadMoreError ? 'Réessayer' : 'Voir plus d’articles'}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        ) : undefined
+      }
       refreshControl={
         <RefreshControl
-          onRefresh={() => void reloadFeed(true)}
+          onRefresh={() => void loadFirstPage(true)}
           refreshing={isRefreshing}
           tintColor={colors.primary}
         />
@@ -209,6 +285,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   loadingText: { ...typography.bodySecondary, textAlign: 'center' },
+  loadMoreButton: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingHorizontal: spacing.lg,
+  },
+  loadMoreButtonDisabled: { opacity: 0.6 },
+  loadMoreButtonPressed: { backgroundColor: colors.primarySoft },
+  loadMoreButtonText: { ...typography.button, color: colors.primary },
+  loadMoreContainer: { gap: spacing.sm, paddingTop: spacing.sm },
+  loadMoreError: { ...typography.bodySecondary, color: colors.error, textAlign: 'center' },
   logoContainer: { alignItems: 'center', marginBottom: spacing.md },
   retryButton: {
     alignItems: 'center',

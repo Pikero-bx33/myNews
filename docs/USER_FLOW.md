@@ -95,14 +95,14 @@ After an app restart or a new login, Better Auth restores the session through Se
 
 ### 7. Load the personalized feed
 
-When the user reaches Home, the app sends `GET /api/v1/feed` with the Better Auth session cookie. The backend uses the saved preferences to retrieve and normalize relevant articles before returning them to the mobile app.
+When the user reaches Home, the app sends `GET /api/v1/feed?page=1` with the Better Auth session cookie. The backend uses the saved preferences to retrieve and normalize relevant articles before returning them to the mobile app.
 
 - Articles available: Home displays one card per article with its image (or a fallback), source, date, title, optional description, and topics.
 - No articles: Home explains that no article matches the current preferences.
 - Preferences missing (`409`): the user is returned to the first onboarding step.
 - Network or provider error: Home displays an error message and a Retry action.
 
-The user can pull down the list to request a fresh feed. Tapping an article card opens the publisher's URL in the device's system browser. Opening an article does **not** mark it as read.
+When another page is available, the user can choose **Voir plus d’articles**. The app requests the next page once and appends only articles not already present. If it fails, the displayed feed remains available and the same page can be retried. Pull-to-refresh requests page 1 again and replaces the list. Tapping an article card opens the publisher's URL in the device's system browser. Opening an article does **not** mark it as read.
 
 Each card provides two explicit, independent actions:
 

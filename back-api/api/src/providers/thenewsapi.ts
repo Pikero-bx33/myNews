@@ -31,9 +31,27 @@ const theNewsApiCategoryToMyNewsTopics = {
 
 const THE_NEWS_API_ALL_NEWS_URL = "https://api.thenewsapi.com/v1/news/all";
 export const FEED_LIMIT = 3;
+export const FEED_FRESHNESS_DAYS = 7;
 
 export const toTheNewsApiLanguageParameter = (languages: ("fr" | "en")[]) =>
   languages.join(",");
+
+export const getTheNewsApiPublishedAfter = (now = new Date()) => {
+  const publishedAfter = new Date(now);
+  publishedAfter.setUTCDate(publishedAfter.getUTCDate() - FEED_FRESHNESS_DAYS);
+
+  return publishedAfter.toISOString().slice(0, 10);
+};
+
+export type TheNewsApiFeed = {
+  articles: NormalizedArticle[];
+  meta: {
+    found: number;
+    returned: number;
+    limit: number;
+    page: number;
+  };
+};
 
 type FeedPreferences = {
   blockedSources: string[];
@@ -64,12 +82,18 @@ const toTheNewsApiCategories = (topics: string[]) =>
     }),
   );
 
-export const buildTheNewsApiFeedUrl = (preferences: FeedPreferences): URL => {
+export const buildTheNewsApiFeedUrl = (
+  preferences: FeedPreferences,
+  page: number,
+): URL => {
   const url = new URL(THE_NEWS_API_ALL_NEWS_URL);
   const categories = toTheNewsApiCategories(preferences.topics);
 
   url.searchParams.set("api_token", env.theNewsApiKey);
   url.searchParams.set("limit", String(FEED_LIMIT));
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("published_after", getTheNewsApiPublishedAfter());
+  url.searchParams.set("sort", "published_at");
 
   if (preferences.contentLanguages.length > 0) {
     url.searchParams.set(
@@ -110,6 +134,20 @@ const normalizeTheNewsApiCategories = (categories: string[]): string[] =>
     ),
   );
 
+const deduplicateArticles = (articles: NormalizedArticle[]) => {
+  const articlesByKey = new Map<string, NormalizedArticle>();
+
+  for (const article of articles) {
+    const key = `${article.provider}:${article.externalId}`;
+
+    if (!articlesByKey.has(key)) {
+      articlesByKey.set(key, article);
+    }
+  }
+
+  return [...articlesByKey.values()];
+};
+
 export const normalizeTheNewsApiArticle = (
   article: typeof theNewsApiResponseSchema.shape.data.element._output,
 ): NormalizedArticle => ({
@@ -128,8 +166,9 @@ export const normalizeTheNewsApiArticle = (
 
 export const getTheNewsApiFeed = async (
   preferences: FeedPreferences,
-): Promise<NormalizedArticle[]> => {
-  const response = await fetch(buildTheNewsApiFeedUrl(preferences));
+  page: number,
+): Promise<TheNewsApiFeed> => {
+  const response = await fetch(buildTheNewsApiFeedUrl(preferences, page));
   const body: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
@@ -146,5 +185,10 @@ export const getTheNewsApiFeed = async (
     throw new TheNewsApiError(502);
   }
 
-  return parsedResponse.data.data.map(normalizeTheNewsApiArticle);
+  return {
+    articles: deduplicateArticles(
+      parsedResponse.data.data.map(normalizeTheNewsApiArticle),
+    ),
+    meta: parsedResponse.data.meta,
+  };
 };
