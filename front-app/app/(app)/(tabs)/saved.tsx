@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ArticleCard } from '@/components/feed/article-card';
+import { BrandLogo } from '@/components/branding/brand-logo';
 import { EmptyState } from '@/components/ui/empty-state';
 import { updateArticleState, type ArticleUserState } from '@/lib/api/articles';
 import { getFavorites } from '@/lib/api/favorites';
@@ -107,6 +108,13 @@ export default function SavedScreen() {
       }
       ListHeaderComponent={
         <View style={styles.header}>
+          <Pressable
+            accessibilityLabel="Accueil"
+            accessibilityRole="button"
+            onPress={() => router.replace('/home')}
+            style={({ pressed }) => [styles.logoButton, pressed && styles.logoButtonPressed]}>
+            <BrandLogo width={144} />
+          </Pressable>
           <Text style={styles.title}>Enregistrés</Text>
           <Text style={styles.subtitle}>Vos articles favoris, disponibles à tout moment.</Text>
           {actionError ? <Text style={styles.error}>{actionError}</Text> : null}
@@ -155,6 +163,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   loadingText: { ...typography.bodySecondary, textAlign: 'center' },
+  logoButton: { alignSelf: 'center', marginBottom: spacing.xl },
+  logoButtonPressed: { opacity: 0.7 },
   retryButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,

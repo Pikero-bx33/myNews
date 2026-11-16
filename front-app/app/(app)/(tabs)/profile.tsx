@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { TextButton } from '@/components/ui/text-button';
+import { BrandLogo } from '@/components/branding/brand-logo';
 import { authClient } from '@/lib/auth-client';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
@@ -13,6 +13,7 @@ export default function ProfileScreen() {
   const { data: session } = authClient.useSession();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const userName = session?.user.name?.trim();
 
   const signOut = async () => {
     setErrorMessage(null);
@@ -29,7 +30,16 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + spacing.xl, paddingTop: insets.top + spacing.xl }]}>
-      <Text style={styles.title}>Profil</Text>
+      <View style={styles.header}>
+        <Pressable
+          accessibilityLabel="Accueil"
+          accessibilityRole="button"
+          onPress={() => router.replace('/home')}
+          style={({ pressed }) => [styles.logoButton, pressed && styles.logoButtonPressed]}>
+          <BrandLogo width={144} />
+        </Pressable>
+        <Text style={styles.title}>{userName ? `Profil de ${userName}` : 'Profil'}</Text>
+      </View>
       <View style={styles.section}>
         <Text style={styles.label}>Compte</Text>
         <Text style={styles.email}>{session?.user.email ?? 'Email indisponible'}</Text>
@@ -49,12 +59,14 @@ export default function ProfileScreen() {
         </Pressable>
       </View>
       <View style={styles.actions}>
-        <TextButton
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ busy: isSigningOut, disabled: isSigningOut }}
           disabled={isSigningOut}
-          label={isSigningOut ? 'Déconnexion…' : 'Se déconnecter'}
           onPress={() => void signOut()}
-          tone="danger"
-        />
+          style={({ pressed }) => [styles.signOutButton, isSigningOut && styles.signOutButtonDisabled, pressed && !isSigningOut && styles.signOutButtonPressed]}>
+          <Text style={styles.signOutButtonText}>{isSigningOut ? 'Déconnexion…' : 'Se déconnecter'}</Text>
+        </Pressable>
       </View>
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
     </View>
@@ -62,11 +74,14 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  actions: { alignItems: 'flex-start' },
+  actions: { width: '100%' },
   container: { backgroundColor: colors.background, flex: 1, gap: spacing.xl, paddingHorizontal: spacing.xl },
   email: { ...typography.body },
   error: { ...typography.bodySecondary, color: colors.error },
+  header: { gap: spacing.sm },
   label: { ...typography.caption },
+  logoButton: { alignSelf: 'center', marginBottom: spacing.xl },
+  logoButtonPressed: { opacity: 0.7 },
   preferenceCopy: { flex: 1, gap: spacing.xs },
   preferenceDescription: { ...typography.bodySecondary },
   preferenceRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, minHeight: 56 },
@@ -80,5 +95,17 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
   },
+  signOutButton: {
+    alignItems: 'center',
+    backgroundColor: colors.error,
+    borderRadius: radius.md,
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingHorizontal: spacing.lg,
+    marginTop: 20
+  },
+  signOutButtonDisabled: { opacity: 0.6 },
+  signOutButtonPressed: { opacity: 0.8 },
+  signOutButtonText: { ...typography.button, color: colors.surface },
   title: { ...typography.screenTitle },
 });

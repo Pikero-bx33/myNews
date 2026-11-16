@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -15,6 +16,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignIn = async () => {
@@ -34,6 +36,7 @@ export default function LoginScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboardView}>
       <ScrollView
         contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xxl, paddingTop: insets.top + spacing.xl }]}
+        keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled">
         <View style={styles.branding}>
           <View style={styles.logoContainer}>
@@ -60,7 +63,21 @@ export default function LoginScreen() {
               label="Mot de passe"
               onChangeText={setPassword}
               placeholder="Votre mot de passe"
-              secureTextEntry
+              rightAccessory={
+                <Pressable
+                  accessibilityLabel={isPasswordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  accessibilityRole="button"
+                  hitSlop={spacing.sm}
+                  onPress={() => setIsPasswordVisible((isVisible) => !isVisible)}>
+                  <Ionicons
+                    accessible={false}
+                    color={colors.iconDefault}
+                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                    size={22}
+                  />
+                </Pressable>
+              }
+              secureTextEntry={!isPasswordVisible}
               value={password}
             />
             {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
@@ -82,7 +99,7 @@ const styles = StyleSheet.create({
   branding: { gap: spacing.md },
   container: {
     backgroundColor: colors.background,
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'flex-start',
     paddingHorizontal: spacing.xl,
   },
