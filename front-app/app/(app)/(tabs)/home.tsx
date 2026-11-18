@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   loadMoreButtonText: { ...typography.button, color: colors.primary },
   loadMoreContainer: { gap: spacing.sm, paddingTop: spacing.sm },
   loadMoreError: { ...typography.bodySecondary, color: colors.error, textAlign: 'center' },
-  logoContainer: { alignItems: 'center', marginBottom: spacing.md },
+  logoContainer: { alignItems: 'center', marginBottom: spacing.xl },
   retryButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,

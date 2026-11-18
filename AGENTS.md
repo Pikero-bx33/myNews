@@ -205,7 +205,7 @@ Entries should remain concise.
 ## Mobile
 
 - React Native
-- Expo SDK 57
+- Expo SDK 58
 - Expo Router
 - TypeScript
 - React
@@ -252,9 +252,9 @@ Known working environments:
 
 ```text
 Backend:
-Node 20.x
+Node 22.23.1
 
-Frontend / Expo SDK 57:
+Frontend / Expo SDK 58:
 Node 22.23.x
 ```
 
@@ -1668,7 +1668,7 @@ Sprint 1
 Better Auth email/password
 session persistence
 protected routing
-Expo SDK 57 migration
+Expo SDK 58 migration
 
 Sprint 2A
 User preferences backend
@@ -1695,46 +1695,29 @@ loading/error/empty states
 external article opening
 pull-to-refresh
 
-Sprint 4A
+Sprint 4A–4C
 Article persistence
-UserArticleState data model
-persistent article IDs
+UserArticleState API
+Favorite and Read / Unread controls
+Saved and Profile tabs
+
+Sprint 5
+Visual identity, branded assets and preference editing
+
+Sprint 6A
+Recent personalized feed pagination and Load More
+
+Sprint 6B
+MVP QA, targeted cleanup and Expo SDK 58 patch alignment
 ```
 
 ---
 
 # 66. Current development focus
 
-Next planned block:
+Sprint 6B is the final MVP QA and targeted cleanup block before production-focused work.
 
-```text
-Sprint 4B
-User article state API
-```
-
-Expected scope:
-
-- favorite state;
-- read/unread state;
-- timestamps;
-- protected article-state routes;
-- favorites retrieval.
-
-Then:
-
-```text
-Sprint 4C
-Mobile favorite/read controls
-Saved screen
-Bottom navigation
-Profile foundation
-```
-
----
-
-# 67. Planned navigation
-
-Target bottom tabs for Sprint 4C:
+Current MVP navigation:
 
 ```text
 Home
@@ -1746,53 +1729,7 @@ Do not add Explore until the feature exists.
 
 ---
 
-# 68. Planned visual sprint
-
-After functional Sprint 4:
-
-```text
-Sprint 5
-Visual identity and UI redesign
-```
-
-Expected work:
-
-- myNews logo;
-- app icon;
-- final visual identity;
-- Home redesign;
-- onboarding redesign;
-- preferences/profile redesign;
-- bottom navigation polish.
-
-Do not prematurely mix this redesign into backend state work.
-
----
-
-# 69. Planned feed scaling
-
-Later:
-
-```text
-Sprint 6
-Pagination / Load More
-```
-
-Potential scope:
-
-- provider page parameter;
-- more than 3 articles;
-- Load More / infinite scroll;
-- deduplication;
-- caching strategy;
-- quota management;
-- improved ranking.
-
-Do not implement automatic multi-page provider calls before this sprint unless explicitly requested.
-
----
-
-# 70. MVP boundaries
+# 67. MVP boundaries
 
 Current MVP prioritizes:
 
@@ -1824,7 +1761,7 @@ Do not move post-MVP functionality into current sprints without explicit approva
 
 ---
 
-# 71. Learning objective
+# 68. Learning objective
 
 This project is not only about producing working software.
 
@@ -1842,7 +1779,7 @@ When multiple solutions are possible, prefer the solution that balances good eng
 
 ---
 
-# 72. Agent communication
+# 69. Agent communication
 
 When completing a meaningful block, report:
 
@@ -1858,7 +1795,7 @@ Do not claim a feature is validated on a physical device unless it was actually 
 
 ---
 
-# 73. Final rule
+# 70. Final rule
 
 When in doubt:
 

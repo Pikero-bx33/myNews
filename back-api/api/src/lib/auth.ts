@@ -6,7 +6,8 @@ import { env } from "../config/env.js";
 
 const trustedOrigins = [
   "frontapp://",
-  ...(process.env.NODE_ENV === "production" ? [] : ["exp://", "exp://**"]),
+  ...(env.nodeEnv === "production" ? [] : ["exp://", "exp://**"]),
+  ...env.betterAuthTrustedOrigins,
 ];
 
 export const auth = betterAuth({

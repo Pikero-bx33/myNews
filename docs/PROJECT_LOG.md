@@ -1,5 +1,35 @@
 # Project Log
 
+## 2026-11-17 — Sprint 7B: backend deployment readiness
+
+**Goal:** Prepare the existing Express API for a first manual Render deployment without deploying a service.
+
+**Changes:** Added startup validation for production-critical environment variables, comma-separated CORS and Better Auth origin configuration, a public minimal `GET /health` endpoint, explicit `0.0.0.0` host binding, and separate build/start scripts for Render. Deployment and Better Auth documentation now distinguish browser CORS from Better Auth trusted origins.
+
+**Decisions:** Native `frontapp://` and development Expo origins remain supported; requests without a browser `Origin` remain accessible for native clients. Cookie attributes remain unchanged. No service, secret, domain, DNS setting, Atlas setting, frontend Web auth code, or deployment was created.
+
+**Next steps:** Sprint 7C can configure a Render Web Service manually and validate the health endpoint. Browser-compatible authentication and Safari session validation remain Sprint 7D.
+
+## 2026-11-16 — Sprint 7A: production audit and deployment architecture
+
+**Goal:** Audit production deployment requirements and document the target architecture without deploying a service.
+
+**Changes:** Added the deployment reference, evaluated Render, Railway and Vercel for the separate Express API, verified static Expo Web export, and recorded the backend, Better Auth, CORS, browser-session, Atlas, EAS and native-asset prerequisites.
+
+**Decisions:** Render Web Service is the initial backend recommendation with `back-api` as root directory. Expo Web remains a static deployment target. No service, account, domain, DNS record, EAS project, native build or secret was created or changed.
+
+**Next steps:** Sprint 7B will add the minimal backend production hardening and browser-compatible authentication/API handling before a first public deployment.
+
+## 2026-11-15 — Sprint 6B: MVP QA and production cleanup
+
+**Goal:** Prepare the completed MVP for the next production-focused sprint without adding product features.
+
+**Changes:** Removed unused Expo starter components, hooks, assets and dependencies; hardened backend keyword normalization against case-insensitive duplicates; aligned the installed Expo SDK 58 packages to their recommended patch versions; and replaced empty or obsolete project documentation with a concise MVP reference.
+
+**Decisions:** Better Auth, routing, provider integration, feed behavior, Redux boundaries and durable MongoDB state remain unchanged. `expo-network`, `expo-system-ui` and backend observability dependencies remain because they are still required or not proven unnecessary. The final native app icons and deployment remain deliberately deferred.
+
+**Verification:** Backend and frontend static checks, Expo dependency validation, Expo Doctor, Metro startup, backend startup, and a web bundle smoke test passed. Physical-device interactions remain a final manual validation step.
+
 ## 2026-11-12 — Sprint 6A: explicit feed pagination
 
 **Goal:** Let an authenticated user explicitly load the next small page of their personalized feed without changing the provider quota strategy or durable-state architecture.

@@ -54,7 +54,7 @@ The backend creates and validates the session. The Expo client keeps the session
 | `front-app/app/(auth)/login.tsx` | Mobile | Collects email/password and calls `authClient.signIn.email(...)`. |
 | `front-app/app/(auth)/register.tsx` | Mobile | Collects name/email/password and calls `authClient.signUp.email(...)`. |
 | `front-app/app/(app)/_layout.tsx` | Mobile | Provides the stack navigator for authenticated screens. |
-| `front-app/app/(app)/index.tsx` | Mobile | Displays basic session information and calls `authClient.signOut()`. |
+| `front-app/app/(app)/index.tsx` | Mobile | Authenticated application gate: checks persisted preferences and routes to onboarding or Home tabs. |
 | `front-app/app.json` | Mobile | Declares the `frontapp` scheme and native Expo plugins, including Secure Store. |
 
 ## Packages involved
@@ -67,7 +67,6 @@ The backend creates and validates the session. The Expo client keeps the session
 | `expo-router` | Expo | File-based navigation and `Stack.Protected` route guards. |
 | `expo-network` | Expo | Installed for the Better Auth Expo integration's network support; it is not imported directly by application screens. |
 | `expo-linking` | Expo | Installed for Expo deep-link support. The current email/password flow does not call it directly. |
-| `expo-web-browser` | Expo | Available for browser-based flows and used elsewhere by the app's external-link component. It is not part of the current email/password flow. |
 | `expo-constants` | Expo | Installed Expo runtime configuration support; it is not imported directly by the current authentication screens. |
 
 `better-auth` and `@better-auth/expo` provide authentication behaviour. Expo packages provide the native runtime services around it: routing, secure storage, device/network support, and linking infrastructure.
@@ -153,7 +152,10 @@ Never commit real values for these variables.
 | Backend | `PORT` | Express port; the local development default is `3001`. |
 | Backend | `MONGO_URI` | MongoDB Atlas connection string used by the native MongoDB client and Mongoose startup connection. |
 | Backend | `BETTER_AUTH_SECRET` | Secret used by Better Auth to protect authentication data. It must remain server-side. |
-| Backend | `BETTER_AUTH_URL` | Public base URL known by Better Auth; local development falls back to `http://localhost:3001`. |
+| Backend | `BETTER_AUTH_URL` | Required public base URL known by Better Auth; set it to the local API URL during development. |
+| Backend | `NODE_ENV` | `development` by default; `production` disables development-only origins and request logging. |
+| Backend | `BETTER_AUTH_TRUSTED_ORIGINS` | Optional comma-separated exact additional web origins accepted by Better Auth. |
+| Backend | `CORS_ORIGINS` | Optional comma-separated exact browser origins allowed by Express CORS; distinct from Better Auth trusted origins. |
 | Frontend | `EXPO_PUBLIC_API_URL` | Base URL used by the mobile client before `/api/v1/auth` is appended. |
 
 For a physical iPhone running a locally hosted backend, `localhost` means the iPhone itself, not the Mac. The frontend therefore uses the Mac's LAN address, for example:
@@ -163,6 +165,8 @@ EXPO_PUBLIC_API_URL=http://<MAC_IP>:3001
 ```
 
 The Mac and phone must be able to reach each other on the same local network (or a working shared connection), the backend must listen and be reachable on port `3001`, and MongoDB Atlas must allow the Mac's current public IP.
+
+`frontapp://` is always retained as a Better Auth trusted origin for the native application. The Expo development `exp://` origins are added only outside production. A future public Expo Web URL must be configured explicitly in both `BETTER_AUTH_TRUSTED_ORIGINS` and `CORS_ORIGINS`: CORS controls browser access to Express, while Better Auth uses its own allowlist for authentication security. They are related but not interchangeable.
 
 ## Better Auth database model
 

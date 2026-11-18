@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "node": "22.23.1"
+  },
   "type": "module",
   "scripts": {
     "clean": "node ./scripts/clean-dist.mjs",
     "dev": "tsx watch ./api/src/index.ts",
     "build": "yarn clean && tsc",
-    "start": "yarn build && node dist/index.js"
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@better-auth/expo": "^1.6.5",

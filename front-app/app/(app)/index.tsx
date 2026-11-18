@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
+import { PrimaryButton } from '@/components/ui/primary-button';
 import { getPreferences } from '@/lib/api/preferences';
+import { colors, spacing, typography } from '@/theme/tokens';
 
 export default function AppIndex() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export default function AppIndex() {
   return (
     <View style={styles.centeredContainer}>
       <Text style={styles.error}>{errorMessage}</Text>
-      <Button onPress={() => setRetryCount((count) => count + 1)} title="Réessayer" />
+      <PrimaryButton label="Réessayer" onPress={() => setRetryCount((count) => count + 1)} />
     </View>
   );
 }
@@ -65,15 +67,15 @@ export default function AppIndex() {
 const styles = StyleSheet.create({
   centeredContainer: {
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     flex: 1,
-    gap: 16,
+    gap: spacing.lg,
     justifyContent: 'center',
-    padding: 24,
+    padding: spacing.xl,
   },
   error: {
-    color: '#EF4444',
-    lineHeight: 22,
+    ...typography.bodySecondary,
+    color: colors.error,
     textAlign: 'center',
   },
 });

@@ -24,8 +24,8 @@ Implemented fields:
 | `topics` | `string[]` | Empty by default. |
 | `keywords` | `string[]` | Empty by default. |
 | `contentLanguages` | `("fr" \| "en")[]` | Empty by default; only `fr` and `en` are accepted. |
-| `preferredSources` | `string[]` | Empty by default; reserved for a future provider integration. |
-| `blockedSources` | `string[]` | Empty by default; reserved for a future provider integration. |
+| `preferredSources` | `string[]` | Empty by default; already preserved and mapped to provider domains, but has no user-facing UI yet. |
+| `blockedSources` | `string[]` | Empty by default; already preserved and mapped to provider exclusions, but has no user-facing UI yet. |
 | `createdAt` | `Date` | Managed by Mongoose timestamps. |
 | `updatedAt` | `Date` | Managed by Mongoose timestamps. |
 
@@ -104,8 +104,8 @@ Store a user's independent favorite and reading status for one persisted article
 | `articleId` | `ObjectId` | Reference to `articles._id`. |
 | `isFavorite` | `boolean` | Defaults to `false`. |
 | `isRead` | `boolean` | Defaults to `false`. |
-| `savedAt` | `Date \| null` | Defaults to `null`; set only by a future explicit favorite action. |
-| `readAt` | `Date \| null` | Defaults to `null`; set only by a future explicit read action. |
+| `savedAt` | `Date \| null` | Defaults to `null`; set when the user explicitly favorites an article. |
+| `readAt` | `Date \| null` | Defaults to `null`; set when the user explicitly marks an article as read. |
 | `createdAt` / `updatedAt` | `Date` | Managed by Mongoose timestamps. |
 
 The compound index `userId + articleId` is unique. `isFavorite` and `isRead` have no dependency: either can be true while the other is false. Opening an article does **not** automatically mark it as read.

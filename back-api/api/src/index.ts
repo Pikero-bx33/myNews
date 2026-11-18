@@ -8,8 +8,8 @@ const startServer = async () => {
     await connectDB();
     await mongoClient.connect();
 
-    app.listen(env.port, () => {
-      console.log(`Server running on port ${env.port}`);
+    app.listen(env.port, "0.0.0.0", () => {
+      console.log(`Server running on 0.0.0.0:${env.port}`);
     });
   } catch (error) {
     console.error("Startup error:", error);
