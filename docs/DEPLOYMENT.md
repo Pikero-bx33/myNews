@@ -7,7 +7,7 @@ myNews will expose one public HTTPS Express API used by both clients:
 - Expo Web for the portfolio Live Demo;
 - future iOS and Android native builds.
 
-This document records the deployment architecture and the prerequisites discovered in Sprint 7A. It does not deploy a service and does not replace local development instructions.
+This document records the deployment architecture and the first public backend deployment. It does not replace local development instructions.
 
 ## Production architecture
 
@@ -64,11 +64,12 @@ Development and production secrets, URLs, cookies, and origins must not be share
 | --- | --- |
 | Service type | Web Service |
 | Root directory | `back-api` |
-| Install | Platform-managed Yarn install from `back-api/yarn.lock` |
-| Build command | `yarn build` |
+| Public API URL | `https://mynews-api-3gx9.onrender.com` |
+| Node.js | `22.23.1` |
+| Build command | `yarn install --frozen-lockfile --production=false && yarn build` |
 | Start command | `yarn start` |
-| Branch | `main` when production deployment is approved |
-| Health check | Pending Sprint 7B (`GET /health` does not exist yet) |
+| Branch | `main` |
+| Health check | `/health` |
 
 The current backend scripts are:
 
@@ -77,7 +78,7 @@ yarn build → yarn clean && tsc
 yarn start → yarn build && node dist/index.js
 ```
 
-`yarn start` starts the compiled server only. Render can therefore build once with `yarn build` and start with `yarn start` without a redundant compilation.
+`yarn start` starts the compiled server only. Render installs the locked dependencies, builds once, then starts the compiled server without a redundant compilation.
 
 ### Port
 
@@ -110,7 +111,7 @@ Both origin variables are trimmed, split on commas, emptied values removed, and 
 
 Current Better Auth configuration:
 
-- backend `baseURL` is `BETTER_AUTH_URL`;
+- backend `baseURL` is `BETTER_AUTH_URL`, configured in Render as `https://mynews-api-3gx9.onrender.com`;
 - backend `basePath` is `/api/v1/auth`;
 - native client base URL is `${EXPO_PUBLIC_API_URL}/api/v1/auth`;
 - the Expo plugin uses scheme `frontapp` and Secure Store on native;
@@ -153,6 +154,20 @@ Sprint 7B must verify, without committing credentials:
 - least-privilege database user;
 - production connection string stored only in host secrets;
 - successful Mongoose and Better Auth MongoDB startup.
+
+## Sprint 7C deployment verification
+
+The first Render backend deployment is live at:
+
+```text
+https://mynews-api-3gx9.onrender.com
+```
+
+The public `GET /health` endpoint returns HTTP `200`. The protected `GET /api/v1/preferences` endpoint returns HTTP `401` when called without a session.
+
+Native validation was performed on an iPhone with the local backend stopped and the device on 4G. Login and session handling, feed loading, pagination, favorite, Read / Unread, Saved, preference editing, logout/login, and session persistence after relaunch all worked against the public backend.
+
+The Expo tunnel returned `ETIMEDOUT` during its first connection attempt, then the application loaded correctly. This was a transient tunnel condition and not a Render backend issue.
 
 ## TheNewsAPI
 
@@ -248,9 +263,10 @@ App Store / TestFlight distribution is deliberately deferred. This is a product 
 
 ### Sprint 7C — first public deployment
 
-- [ ] Create the selected backend Web Service manually from `back-api`.
-- [ ] Configure secret environment variables in the host dashboard.
-- [ ] Verify Atlas access and API health endpoint.
+- [x] Create the Render Web Service manually from `back-api`.
+- [x] Configure production environment variables in the Render dashboard, including `BETTER_AUTH_URL` with the public Render URL.
+- [x] Verify Atlas access, `GET /health` (`200`), and unauthenticated `GET /api/v1/preferences` (`401`).
+- [x] Validate the public backend on iPhone over 4G: login/session, feed, pagination, article state, Saved, preferences, logout/login, and relaunch persistence.
 - [ ] Export/deploy Expo Web with the public HTTPS API URL.
 - [ ] Add exact deployed web origin to CORS and Better Auth.
 - [ ] Test registration, login, reload/session restoration, feed, favorites, preferences and logout in a browser.
@@ -264,7 +280,7 @@ App Store / TestFlight distribution is deliberately deferred. This is a product 
 
 ## Known limitations
 
-- No service, domain, DNS record, Expo project, EAS project, build, or deployment has been created in Sprint 7A.
+- The public Render backend is deployed; Expo Web, a custom domain, an Expo project, EAS configuration, and native builds remain pending.
 - Current browser authentication is not production-ready because it reuses native Secure Store/cookie forwarding assumptions.
 - Native identifiers and production app icons are pending.
 

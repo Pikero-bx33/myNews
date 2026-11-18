@@ -1,5 +1,15 @@
 # Project Log
 
+## 2026-11-18 — Sprint 7C: first public Render backend deployment
+
+**Goal:** Deploy and validate the first public HTTPS backend without expanding the mobile or browser product scope.
+
+**Changes:** Deployed the Express API on Render at `https://mynews-api-3gx9.onrender.com`, using `back-api` as the Root Directory, Node `22.23.1`, `yarn install --frozen-lockfile --production=false && yarn build`, `yarn start`, and `/health` as the health check. `BETTER_AUTH_URL` is configured with the Render URL.
+
+**Verification:** Public `GET /health` returns `200`; unauthenticated `GET /api/v1/preferences` returns `401`. On an iPhone over 4G with the local backend stopped, login/session, feed, pagination, favorite, Read / Unread, Saved, preference editing, logout/login, and session persistence after relaunch were validated. An initial Expo tunnel `ETIMEDOUT` resolved on retry and was not a Render issue.
+
+**Next steps:** Expo Web browser authentication, exact browser origins, portfolio Live Demo, custom-domain decisions, and native build preparation remain separate later work.
+
 ## 2026-11-17 — Sprint 7B: backend deployment readiness
 
 **Goal:** Prepare the existing Express API for a first manual Render deployment without deploying a service.
