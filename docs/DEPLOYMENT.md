@@ -142,7 +142,7 @@ Native and Web cannot reuse the current data-request mechanism unchanged:
 
 This is the main Sprint 7B prerequisite for a functional Live Demo. Implement a platform-specific web authentication/API client rather than weakening native session handling or introducing a second authentication system.
 
-For Safari compatibility, avoid treating the API as an unrelated third-party cookie domain. The preferred future topology is a web host and API host under a shared custom parent domain, with the final Better Auth cookie policy validated on Safari. Expo Hosting and an unrelated API subdomain are acceptable for a first technical test only after browser session persistence has been verified.
+For Safari compatibility, avoid treating the API as an unrelated third-party cookie domain. The preferred future topology is a web host and API host under a shared custom parent domain, with the final Better Auth cookie policy validated on Safari. Netlify and an unrelated API subdomain are acceptable for a first technical test only after browser session persistence has been verified.
 
 ## MongoDB Atlas
 
@@ -175,7 +175,7 @@ The Expo tunnel returned `ETIMEDOUT` during its first connection attempt, then t
 
 ## Expo Web
 
-`front-app/app.json` explicitly sets `expo.web.output` to `static`. This is the simplest fit for the current client-rendered Expo Router application and Expo Hosting: no Expo Router server rendering or API routes are needed.
+`front-app/app.json` explicitly sets `expo.web.output` to `static`. This is the simplest fit for the current client-rendered Expo Router application: no Expo Router server rendering or API routes are needed.
 
 Sprint 7A verified that:
 
@@ -186,6 +186,34 @@ npx expo export --platform web
 successfully creates `front-app/dist`. The directory is ignored by Git.
 
 Export success does not prove runtime web authentication: the browser-specific session work described above remains required in Sprint 7B. `EXPO_PUBLIC_API_URL` is read at bundle time with no localhost fallback, so each preview/production export must receive the intended public HTTPS API URL.
+
+### Static hosting (Sprint 7D.2)
+
+**Netlify** is the selected static host for the first public Expo Web deployment. It publishes the existing static export directly and provides HTTPS without adding an application dependency or a server runtime.
+
+`front-app/netlify.toml` is intentionally the only hosting-specific frontend configuration:
+
+- the build command is `npx expo export --platform web`;
+- the published directory is `dist`;
+- no SPA catch-all rewrite is configured: the static export already generates a public HTML file for every current route (for example, `login.html`, `home.html`, and `preferences/edit.html`), which Netlify serves at the corresponding extensionless URL. This keeps direct browser requests working without intercepting exported JavaScript, images, or fonts.
+
+Create the Netlify site from the repository with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Base directory | `front-app` |
+| Install command | `yarn install --frozen-lockfile` |
+| Build command | `npx expo export --platform web` |
+| Publish directory | `dist` |
+| Node.js version | `22.23.1` |
+
+Set the following build environment variable in Netlify before the first deploy:
+
+```text
+EXPO_PUBLIC_API_URL=https://mynews-api-3gx9.onrender.com
+```
+
+This value is public configuration, embedded in the web bundle at build time; it is not a secret. Do not add backend secrets, cookies, `CORS_ORIGINS`, or `BETTER_AUTH_TRUSTED_ORIGINS` to Netlify.
 
 ## Expo Build / EAS
 
@@ -268,6 +296,7 @@ App Store / TestFlight distribution is deliberately deferred. This is a product 
 - [x] Verify Atlas access, `GET /health` (`200`), and unauthenticated `GET /api/v1/preferences` (`401`).
 - [x] Validate the public backend on iPhone over 4G: login/session, feed, pagination, article state, Saved, preferences, logout/login, and relaunch persistence.
 - [ ] Export/deploy Expo Web with the public HTTPS API URL.
+- [x] Add Netlify static-host configuration (`front-app/netlify.toml`) and documented build settings.
 - [ ] Add exact deployed web origin to CORS and Better Auth.
 - [ ] Test registration, login, reload/session restoration, feed, favorites, preferences and logout in a browser.
 - [ ] Add portfolio Live Demo, GitHub and QR links after validation.
