@@ -1,4 +1,5 @@
-import { apiBaseUrl, authClient } from '@/lib/auth-client';
+import { getAuthenticatedRequestOptions } from '@/lib/api/authenticated-request';
+import { apiBaseUrl } from '@/lib/auth-client';
 
 export type ContentLanguage = 'fr' | 'en';
 
@@ -22,19 +23,6 @@ type PreferencesResponse = {
   preferences: UserPreferences | null;
 };
 
-export const getAuthHeaders = async () => {
-  const cookie = await authClient.getCookie();
-
-  if (!cookie) {
-    throw new Error('Votre session est indisponible. Veuillez vous reconnecter.');
-  }
-
-  return {
-    Accept: 'application/json',
-    Cookie: cookie,
-  };
-};
-
 const getErrorMessage = (status: number) => {
   if (status === 401) {
     return 'Votre session a expiré. Veuillez vous reconnecter.';
@@ -48,9 +36,10 @@ const getErrorMessage = (status: number) => {
 };
 
 export async function getPreferences(): Promise<UserPreferences | null> {
-  const response = await fetch(`${apiBaseUrl}/api/v1/preferences`, {
-    headers: await getAuthHeaders(),
-  });
+  const response = await fetch(
+    `${apiBaseUrl}/api/v1/preferences`,
+    await getAuthenticatedRequestOptions(),
+  );
 
   if (!response.ok) {
     throw new Error(getErrorMessage(response.status));
@@ -61,10 +50,12 @@ export async function getPreferences(): Promise<UserPreferences | null> {
 }
 
 export async function savePreferences(payload: UserPreferencesPayload): Promise<UserPreferences> {
+  const requestOptions = await getAuthenticatedRequestOptions();
   const response = await fetch(`${apiBaseUrl}/api/v1/preferences`, {
+    ...requestOptions,
     body: JSON.stringify(payload),
     headers: {
-      ...(await getAuthHeaders()),
+      ...requestOptions.headers,
       'Content-Type': 'application/json',
     },
     method: 'PUT',

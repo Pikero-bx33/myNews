@@ -1,4 +1,4 @@
-import { getAuthHeaders } from '@/lib/api/preferences';
+import { getAuthenticatedRequestOptions } from '@/lib/api/authenticated-request';
 import { apiBaseUrl } from '@/lib/auth-client';
 import type { ArticleUserState } from '@/lib/api/articles';
 
@@ -46,9 +46,10 @@ const getErrorMessage = (status: number) => {
 };
 
 export async function getFeed(page = 1): Promise<FeedResponse> {
-  const response = await fetch(`${apiBaseUrl}/api/v1/feed?page=${page}`, {
-    headers: await getAuthHeaders(),
-  });
+  const response = await fetch(
+    `${apiBaseUrl}/api/v1/feed?page=${page}`,
+    await getAuthenticatedRequestOptions(),
+  );
 
   if (!response.ok) {
     throw new FeedRequestError(getErrorMessage(response.status), response.status);

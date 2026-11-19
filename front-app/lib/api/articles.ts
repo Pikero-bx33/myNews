@@ -1,5 +1,5 @@
 import { apiBaseUrl } from '@/lib/auth-client';
-import { getAuthHeaders } from '@/lib/api/preferences';
+import { getAuthenticatedRequestOptions } from '@/lib/api/authenticated-request';
 
 export type ArticleUserState = {
   isFavorite: boolean;
@@ -30,10 +30,12 @@ export async function updateArticleState(
   articleId: string,
   update: ArticleStateUpdate,
 ): Promise<ArticleUserState> {
+  const requestOptions = await getAuthenticatedRequestOptions();
   const response = await fetch(`${apiBaseUrl}/api/v1/articles/${articleId}/state`, {
+    ...requestOptions,
     body: JSON.stringify(update),
     headers: {
-      ...(await getAuthHeaders()),
+      ...requestOptions.headers,
       'Content-Type': 'application/json',
     },
     method: 'PUT',
