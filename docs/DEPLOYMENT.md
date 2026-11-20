@@ -142,7 +142,7 @@ Native and Web cannot reuse the current data-request mechanism unchanged:
 
 This is the main Sprint 7B prerequisite for a functional Live Demo. Implement a platform-specific web authentication/API client rather than weakening native session handling or introducing a second authentication system.
 
-For Safari compatibility, avoid treating the API as an unrelated third-party cookie domain. The preferred future topology is a web host and API host under a shared custom parent domain, with the final Better Auth cookie policy validated on Safari. Netlify and an unrelated API subdomain are acceptable for a first technical test only after browser session persistence has been verified.
+For Safari compatibility, avoid treating the API as an unrelated third-party cookie domain. The preferred future topology is a web host and API host under a shared custom parent domain, with the final Better Auth cookie policy validated on Safari. Expo Hosting and an unrelated API subdomain are acceptable for a first technical test only after browser session persistence has been verified.
 
 ## MongoDB Atlas
 
@@ -187,33 +187,30 @@ successfully creates `front-app/dist`. The directory is ignored by Git.
 
 Export success does not prove runtime web authentication: the browser-specific session work described above remains required in Sprint 7B. `EXPO_PUBLIC_API_URL` is read at bundle time with no localhost fallback, so each preview/production export must receive the intended public HTTPS API URL.
 
-### Static hosting (Sprint 7D.2)
+### Expo Hosting (Sprint 7D.2)
 
-**Netlify** is the selected static host for the first public Expo Web deployment. It publishes the existing static export directly and provides HTTPS without adding an application dependency or a server runtime.
+**Expo Hosting** is selected for the first public Expo Web deployment. It directly deploys the existing static `dist` export and provides an HTTPS `*.expo.app` preview URL without an additional hosting configuration file.
 
-`front-app/netlify.toml` is intentionally the only hosting-specific frontend configuration:
+The current configuration is ready for this service:
 
-- the build command is `npx expo export --platform web`;
-- the published directory is `dist`;
-- no SPA catch-all rewrite is configured: the static export already generates a public HTML file for every current route (for example, `login.html`, `home.html`, and `preferences/edit.html`), which Netlify serves at the corresponding extensionless URL. This keeps direct browser requests working without intercepting exported JavaScript, images, or fonts.
+- `expo.web.output` is explicitly `static`;
+- `npx expo export --platform web` generates `front-app/dist`;
+- no `eas.json` is required for a manual web deployment;
+- no Expo Services project ID is currently configured. Link the project manually before the first deployment rather than adding an ID by hand.
 
-Create the Netlify site from the repository with these settings:
+From `front-app`, the manual first-preview sequence is:
 
-| Setting | Value |
-| --- | --- |
-| Base directory | `front-app` |
-| Install command | `yarn install --frozen-lockfile` |
-| Build command | `npx expo export --platform web` |
-| Publish directory | `dist` |
-| Node.js version | `22.23.1` |
-
-Set the following build environment variable in Netlify before the first deploy:
-
-```text
-EXPO_PUBLIC_API_URL=https://mynews-api-3gx9.onrender.com
+```bash
+eas login
+eas whoami
+eas init
+npx expo export --platform web
+eas deploy
 ```
 
-This value is public configuration, embedded in the web bundle at build time; it is not a secret. Do not add backend secrets, cookies, `CORS_ORIGINS`, or `BETTER_AUTH_TRUSTED_ORIGINS` to Netlify.
+`eas init` associates the app with an Expo Services project and writes its generated project ID to the app configuration. On the first `eas deploy`, choose an available preview subdomain when prompted. Do not use `eas deploy --prod` for this first deployment.
+
+Set `EXPO_PUBLIC_API_URL=https://mynews-api-3gx9.onrender.com` in the local build environment before exporting. It is public build configuration, embedded in the web bundle; do not add backend secrets, cookies, `CORS_ORIGINS`, or `BETTER_AUTH_TRUSTED_ORIGINS` to Expo Hosting.
 
 ## Expo Build / EAS
 
@@ -295,8 +292,7 @@ App Store / TestFlight distribution is deliberately deferred. This is a product 
 - [x] Configure production environment variables in the Render dashboard, including `BETTER_AUTH_URL` with the public Render URL.
 - [x] Verify Atlas access, `GET /health` (`200`), and unauthenticated `GET /api/v1/preferences` (`401`).
 - [x] Validate the public backend on iPhone over 4G: login/session, feed, pagination, article state, Saved, preferences, logout/login, and relaunch persistence.
-- [ ] Export/deploy Expo Web with the public HTTPS API URL.
-- [x] Add Netlify static-host configuration (`front-app/netlify.toml`) and documented build settings.
+- [ ] Link the Expo project manually and deploy the Expo Web preview with the public HTTPS API URL.
 - [ ] Add exact deployed web origin to CORS and Better Auth.
 - [ ] Test registration, login, reload/session restoration, feed, favorites, preferences and logout in a browser.
 - [ ] Add portfolio Live Demo, GitHub and QR links after validation.
