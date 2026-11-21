@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
 
 import { colors, spacing } from '@/theme/tokens';
 
@@ -8,6 +9,8 @@ const tabIcons = {
   profile: { active: 'person', inactive: 'person-outline' },
   saved: { active: 'bookmark', inactive: 'bookmark-outline' },
 } as const;
+
+const isWeb = Platform.OS === 'web';
 
 export default function TabsLayout() {
   return (
@@ -22,6 +25,13 @@ export default function TabsLayout() {
           marginTop: spacing.xs,
         },
         tabBarStyle: {
+          ...(isWeb
+            ? {
+                alignSelf: 'center',
+                maxWidth: 620,
+                width: '100%',
+              }
+            : {}),
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
