@@ -17,6 +17,12 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
+        ...(isWeb
+          ? {
+              tabBarLabelPosition: 'below-icon' as const,
+              tabBarShowLabel: true,
+            }
+          : {}),
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.iconDefault,
         tabBarLabelStyle: {

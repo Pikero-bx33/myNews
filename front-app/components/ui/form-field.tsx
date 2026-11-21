@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, Text, TextInput, type TextInputProps, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, type TextInputProps, View } from 'react-native';
 
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     ...typography.body,
     flex: 1,
     minHeight: 48,
+    ...(Platform.OS === 'web' ? { outlineWidth: 0 } : {}),
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
