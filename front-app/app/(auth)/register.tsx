@@ -8,6 +8,7 @@ import { BrandLogo } from '@/components/branding/brand-logo';
 import { FormField } from '@/components/ui/form-field';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { TextButton } from '@/components/ui/text-button';
+import { WebContentContainer } from '@/components/ui/web-content-container';
 import { authClient } from '@/lib/auth-client';
 import { colors, spacing, typography } from '@/theme/tokens';
 
@@ -74,14 +75,15 @@ export default function RegisterScreen() {
         contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xxl, paddingTop: insets.top + spacing.xl }]}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled">
-        <View style={styles.branding}>
+        <WebContentContainer maxWidth={480}>
+          <View style={styles.branding}>
           <View style={styles.logoContainer}>
             <BrandLogo width={144} />
           </View>
           <Text style={styles.title}>Créer votre compte</Text>
           <Text style={styles.subtitle}>Personnalisez votre fil d’actualité en quelques instants.</Text>
-        </View>
-        <View style={styles.form}>
+          </View>
+          <View style={styles.form}>
           <View style={styles.fields}>
             <FormField autoCapitalize="words" label="Nom" onChangeText={setName} placeholder="Votre nom" value={name} />
             <FormField
@@ -149,11 +151,12 @@ export default function RegisterScreen() {
           <View style={styles.primaryAction}>
             <PrimaryButton label="Créer un compte" loading={isSubmitting} onPress={() => void handleSignUp()} />
           </View>
-        </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Vous avez déjà un compte ?</Text>
-          <TextButton label="Se connecter" onPress={() => router.push('/login')} />
-        </View>
+          </View>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Vous avez déjà un compte ?</Text>
+            <TextButton label="Se connecter" onPress={() => router.push('/login')} />
+          </View>
+        </WebContentContainer>
       </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -16,6 +16,7 @@ import { KeywordEditor } from '@/components/preferences/keyword-editor';
 import { contentLanguageOptions, topicOptions } from '@/components/preferences/options';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { TextButton } from '@/components/ui/text-button';
+import { WebContentContainer } from '@/components/ui/web-content-container';
 import {
   getPreferences,
   savePreferences,
@@ -143,53 +144,55 @@ export default function EditPreferencesScreen() {
       <ScrollView
         contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xxl }]}
         keyboardShouldPersistTaps="handled">
-        <View style={styles.heading}>
-          <Text style={styles.title}>Vos préférences</Text>
-          <Text style={styles.description}>Affinez les actualités que vous souhaitez recevoir.</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Langues de contenu</Text>
-          <View style={styles.choices}>
-            {contentLanguageOptions.map((language) => (
-              <SelectableChip
-                key={language.value}
-                label={language.label}
-                onPress={() => toggleLanguage(language.value)}
-                selected={contentLanguages.includes(language.value)}
-              />
-            ))}
+        <WebContentContainer maxWidth={480} style={styles.content}>
+          <View style={styles.heading}>
+            <Text style={styles.title}>Vos préférences</Text>
+            <Text style={styles.description}>Affinez les actualités que vous souhaitez recevoir.</Text>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Centres d’intérêt</Text>
-          <View style={styles.choices}>
-            {topicOptions.map((topic) => (
-              <SelectableChip
-                key={topic.slug}
-                label={topic.label}
-                onPress={() => toggleTopic(topic.slug)}
-                selected={topics.includes(topic.slug)}
-              />
-            ))}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Langues de contenu</Text>
+            <View style={styles.choices}>
+              {contentLanguageOptions.map((language) => (
+                <SelectableChip
+                  key={language.value}
+                  label={language.label}
+                  onPress={() => toggleLanguage(language.value)}
+                  selected={contentLanguages.includes(language.value)}
+                />
+              ))}
+            </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Mots-clés</Text>
-          <Text style={styles.description}>Facultatif : ajoutez des sujets plus précis.</Text>
-          <KeywordEditor keywords={keywords} onChangeKeywords={setKeywords} />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Centres d’intérêt</Text>
+            <View style={styles.choices}>
+              {topicOptions.map((topic) => (
+                <SelectableChip
+                  key={topic.slug}
+                  label={topic.label}
+                  onPress={() => toggleTopic(topic.slug)}
+                  selected={topics.includes(topic.slug)}
+                />
+              ))}
+            </View>
+          </View>
 
-        {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <PrimaryButton
-          disabled={contentLanguages.length === 0 || topics.length === 0}
-          label="Enregistrer les préférences"
-          loading={isSaving}
-          onPress={() => void saveEditedPreferences()}
-        />
-        <TextButton disabled={isSaving} label="Annuler" onPress={() => router.back()} />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Mots-clés</Text>
+            <Text style={styles.description}>Facultatif : ajoutez des sujets plus précis.</Text>
+            <KeywordEditor keywords={keywords} onChangeKeywords={setKeywords} />
+          </View>
+
+          {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+          <PrimaryButton
+            disabled={contentLanguages.length === 0 || topics.length === 0}
+            label="Enregistrer les préférences"
+            loading={isSaving}
+            onPress={() => void saveEditedPreferences()}
+          />
+          <TextButton disabled={isSaving} label="Annuler" onPress={() => router.back()} />
+        </WebContentContainer>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -206,6 +209,7 @@ const styles = StyleSheet.create({
   },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   container: { backgroundColor: colors.background, gap: spacing.xxl, padding: spacing.xl },
+  content: { gap: spacing.xxl },
   description: { ...typography.bodySecondary },
   error: { ...typography.bodySecondary, color: colors.error, textAlign: 'center' },
   heading: { gap: spacing.sm },

@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { WebContentContainer } from '@/components/ui/web-content-container';
 
 type OnboardingScreenProps = {
   children: ReactNode;
@@ -25,17 +26,19 @@ export function OnboardingScreen({ children, description, step, title }: Onboard
           },
         ]}
         keyboardShouldPersistTaps="handled">
-        <View style={styles.progressContainer}>
-          <Text style={styles.progress}>Étape {step} / 3</Text>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressValue, { width: `${(step / 3) * 100}%` }]} />
+        <WebContentContainer maxWidth={480} style={styles.content}>
+          <View style={styles.progressContainer}>
+            <Text style={styles.progress}>Étape {step} / 3</Text>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressValue, { width: `${(step / 3) * 100}%` }]} />
+            </View>
           </View>
-        </View>
-        <View style={styles.heading}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
-        </View>
-        {children}
+          <View style={styles.heading}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.description}>{description}</Text>
+          </View>
+          {children}
+        </WebContentContainer>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
     gap: spacing.xxl,
     paddingHorizontal: spacing.xl,
   },
+  content: { gap: spacing.xxl },
   description: { ...typography.bodySecondary },
   heading: {
     gap: spacing.sm,

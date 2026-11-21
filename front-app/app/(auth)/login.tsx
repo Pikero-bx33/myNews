@@ -8,6 +8,7 @@ import { BrandLogo } from '@/components/branding/brand-logo';
 import { FormField } from '@/components/ui/form-field';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { TextButton } from '@/components/ui/text-button';
+import { WebContentContainer } from '@/components/ui/web-content-container';
 import { authClient } from '@/lib/auth-client';
 import { colors, spacing, typography } from '@/theme/tokens';
 
@@ -38,58 +39,60 @@ export default function LoginScreen() {
         contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + spacing.xxl, paddingTop: insets.top + spacing.xl }]}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled">
-        <View style={styles.branding}>
-          <View style={styles.logoContainer}>
-            <BrandLogo width={144} />
+        <WebContentContainer maxWidth={480}>
+          <View style={styles.branding}>
+            <View style={styles.logoContainer}>
+              <BrandLogo width={144} />
+            </View>
+            <Text adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={1} style={styles.title}>
+              Vos actualités, selon vos intérêts.
+            </Text>
           </View>
-          <Text adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={1} style={styles.title}>
-            Vos actualités, selon vos intérêts.
-          </Text>
-        </View>
-        <View style={styles.form}>
-          <View style={styles.fields}>
-            <FormField
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              label="Adresse e-mail"
-              onChangeText={setEmail}
-              placeholder="vous@exemple.com"
-              value={email}
-            />
-            <FormField
-              autoCapitalize="none"
-              autoCorrect={false}
-              label="Mot de passe"
-              onChangeText={setPassword}
-              placeholder="Votre mot de passe"
-              rightAccessory={
-                <Pressable
-                  accessibilityLabel={isPasswordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                  accessibilityRole="button"
-                  hitSlop={spacing.sm}
-                  onPress={() => setIsPasswordVisible((isVisible) => !isVisible)}>
-                  <Ionicons
-                    accessible={false}
-                    color={colors.iconDefault}
-                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                    size={22}
-                  />
-                </Pressable>
-              }
-              secureTextEntry={!isPasswordVisible}
-              value={password}
-            />
-            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+          <View style={styles.form}>
+            <View style={styles.fields}>
+              <FormField
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                label="Adresse e-mail"
+                onChangeText={setEmail}
+                placeholder="vous@exemple.com"
+                value={email}
+              />
+              <FormField
+                autoCapitalize="none"
+                autoCorrect={false}
+                label="Mot de passe"
+                onChangeText={setPassword}
+                placeholder="Votre mot de passe"
+                rightAccessory={
+                  <Pressable
+                    accessibilityLabel={isPasswordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                    accessibilityRole="button"
+                    hitSlop={spacing.sm}
+                    onPress={() => setIsPasswordVisible((isVisible) => !isVisible)}>
+                    <Ionicons
+                      accessible={false}
+                      color={colors.iconDefault}
+                      name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                      size={22}
+                    />
+                  </Pressable>
+                }
+                secureTextEntry={!isPasswordVisible}
+                value={password}
+              />
+              {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+            </View>
+            <View style={styles.primaryAction}>
+              <PrimaryButton label="Se connecter" loading={isSubmitting} onPress={() => void handleSignIn()} />
+            </View>
           </View>
-          <View style={styles.primaryAction}>
-            <PrimaryButton label="Se connecter" loading={isSubmitting} onPress={() => void handleSignIn()} />
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Vous n’avez pas encore de compte ?</Text>
+            <TextButton label="Créer un compte" onPress={() => router.push('/register')} />
           </View>
-        </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Vous n’avez pas encore de compte ?</Text>
-          <TextButton label="Créer un compte" onPress={() => router.push('/register')} />
-        </View>
+        </WebContentContainer>
       </ScrollView>
     </KeyboardAvoidingView>
   );

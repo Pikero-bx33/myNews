@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArticleCard } from '@/components/feed/article-card';
 import { BrandLogo } from '@/components/branding/brand-logo';
 import { EmptyState } from '@/components/ui/empty-state';
+import { getWebContentContainerStyle } from '@/components/ui/web-content-container';
 import { updateArticleState, type ArticleUserState } from '@/lib/api/articles';
 import { getFavorites } from '@/lib/api/favorites';
 import type { FeedArticle } from '@/lib/api/feed';
@@ -95,6 +96,7 @@ export default function SavedScreen() {
     <FlatList
       contentContainerStyle={[
         styles.listContent,
+        getWebContentContainerStyle(620),
         { paddingBottom: insets.bottom + 24, paddingTop: insets.top + 24 },
       ]}
       data={articles}
